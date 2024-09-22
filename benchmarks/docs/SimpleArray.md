@@ -1,7 +1,9 @@
 ## Overview
 
+This shows how to experiment with the benchmarks of DotNetBenchmark.  This shows interesting behaviors of array implementations, some of these
+are not optimized on purpose to demonstrate progressive usage of the language as it is learned to be used correctly.
 
-// * Summary *
+<hr/><br/><br/>
 
 BenchmarkDotNet v0.14.0, macOS Sonoma 14.6.1 (23G93) [Darwin 23.6.0]
 Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
