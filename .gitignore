@@ -6,7 +6,7 @@ node_modules/
 **/**/node_modules
 
 # Ignore Benchmarks
-**/**/BenchmarkDotnet.Artifacts
+**/**/BenchmarkDotNet.Artifacts
 
 **/**/.DS_Store
 # Ignore user-specific files
