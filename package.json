@@ -1,0 +1,28 @@
+{
+  "name": "nodejs-template-helper",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "add:template": "dotnet new install .",
+    "remove:template": "dotnet new uninstall .",
+    "benchmarks:list": "cd ./benchmarks/SharpExperiments.Benchmarks && dotnet run -c Release --list flat",
+    "benchmarks:tree": "cd ./benchmarks/SharpExperiments.Benchmarks && dotnet run -c Release --list tree",
+    "build:all": "npm run build:core && npm run build:benchmarks && npm run build:tests",
+    "build:benchmarks": "cd ./benchmarks/SharpExperiments.Benchmarks && dotnet build",
+    "build:core": "cd ./src/SharpExperiments && dotnet build",
+    "build:tests": "cd ./tests/SharpExperiments.Tests && dotnet build",
+    "clean:all": "npm run clean:core && npm run clean:benchmarks && run clean:tests",
+    "clean:benchmarks": "cd ./benchmarks/SharpExperiments.Benchmarks/ && dotnet clean && rm -rf obj/ bin/",
+    "clean:core": "cd ./src/SharpExperiments && dotnet clean && rm -rf obj/ bin/",
+    "clean:tests": "cd ./tests/SharpExperiments.Tests/ && dotnet clean && rm -rf obj/ bin/",
+    "clear:nuget:local": "dotnet nuget locals all --clear",
+    "dotnet:benchmarks": "cd ./benchmarks/SharpExperiments.Benchmarks && dotnet run -c Release -- --filter *SharpExperiments.Benchmarks.*",
+    "dotnet:tests": "dotnet test ./tests/SharpExperiments.Tests/SharpExperiments.Tests.csproj --logger \"console;verbosity=detailed\"",
+    "dotnet:watch": "dotnet watch --project ./src/SharpExperiments/src/SharpExperiments.csproj"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
