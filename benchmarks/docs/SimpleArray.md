@@ -5,6 +5,7 @@ are not optimized on purpose to demonstrate progressive usage of the language as
 
 <hr/><br/><br/>
 
+```
 BenchmarkDotNet v0.14.0, macOS Sonoma 14.6.1 (23G93) [Darwin 23.6.0]
 Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
 .NET SDK 8.0.300
@@ -12,6 +13,9 @@ Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
   Job-CXTQPX : .NET 8.0.5 (8.0.524.21615), X64 RyuJIT AVX2
 
 IterationCount=5  WarmupCount=3  
+```
+
+<br/>
 
 | Method                                 | ArraySize | Mean             | Error           | StdDev         | Gen0   | Gen1   | Gen2   | Allocated |
 |--------------------------------------- |---------- |-----------------:|----------------:|---------------:|-------:|-------:|-------:|----------:|
@@ -58,10 +62,8 @@ IterationCount=5  WarmupCount=3
 | ForIterArrayParallelOptimizedChunkSize | 1000000   |     2,408.815 ns |     332.3811 ns |     86.3183 ns | 0.0610 | 0.0248 |      - |     509 B |
 | WhileIterArray                         | 1000000   |   827,198.718 ns | 131,289.8608 ns | 34,095.5600 ns |      - |      - |      - |       1 B |
 
-// * Warnings *
-MinIterationTime
-  BenchmarkArrays.ForIterArray: IterationCount=5, WarmupCount=3 -> The minimum observed iteration time is 20.831ms which is very small. It's recommended to increase it to at least 100ms using more operations.
 
+```diff
 // * Hints *
 Outliers
   BenchmarkArrays.ForIterArray: IterationCount=5, WarmupCount=3                           -> 1 outlier  was  detected (7.86 ns)
@@ -83,7 +85,9 @@ Outliers
   BenchmarkArrays.ForIterArrayGenerator: IterationCount=5, WarmupCount=3                  -> 1 outlier  was  removed (212.80 us)
   BenchmarkArrays.ForIterArrayGenerator: IterationCount=5, WarmupCount=3                  -> 1 outlier  was  removed (3.56 ms)
   BenchmarkArrays.ForIterArrayParallelPartitioner: IterationCount=5, WarmupCount=3        -> 1 outlier  was  removed (2.65 us)
+```
 
+```diff
 // * Legends *
   ArraySize : Value of the 'ArraySize' parameter
   Mean      : Arithmetic mean of all measurements
@@ -94,11 +98,4 @@ Outliers
   Gen2      : GC Generation 2 collects per 1000 operations
   Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
   1 ns      : 1 Nanosecond (0.000000001 sec)
-
-// * Diagnostic Output - MemoryDiagnoser *
-
-
-// ***** BenchmarkRunner: End *****
-Run time: 00:09:51 (591.37 sec), executed benchmarks: 42
-
-Global total time: 00:10:00 (600.43 sec), executed benchmarks: 42
+```
