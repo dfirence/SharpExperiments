@@ -1,10 +1,12 @@
 ﻿namespace SharpExperiments
 {
+    using SharpExperiments.DirectoryInfo;
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello from SharpExperiments!");
+            var result = DirectoryHelper.GetDirectoryFilesByFilterWhereToArray();
+            Console.WriteLine(result);
         }
     }
 }
