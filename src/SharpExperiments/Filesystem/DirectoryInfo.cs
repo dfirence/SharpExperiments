@@ -137,6 +137,7 @@ namespace SharpExperiments.DirectoryInfo
         /// | Method                               | Mean     | Error    | StdDev   | Gen0   | Allocated |
         /// |------------------------------------- |---------:|---------:|---------:|-------:|----------:|
         /// | GetDirectoryFilesByFilterWhereToList | 40.60 us | 0.513 us | 0.428 us | 0.1831 |   1.79 KB |
+        /// 
         /// </summary>
         /// <returns></returns>
         public static bool GetDirectoryFilesByFilterWhereToList()
@@ -145,7 +146,8 @@ namespace SharpExperiments.DirectoryInfo
                 Directory.GetCurrentDirectory()
             )?.ToString();
 
-            cwd = Directory.GetParent(cwd ?? string.Empty)?.ToString();
+            cwd = Directory.GetParent(cwd ?? string.Empty)
+                          ?.ToString();
             return Directory.GetFiles(cwd ?? string.Empty)
                             .Where(e => e.Contains(".json"))
                             .ToList().Count > 0
