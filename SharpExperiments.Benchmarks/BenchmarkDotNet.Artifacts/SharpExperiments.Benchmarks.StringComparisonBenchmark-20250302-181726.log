@@ -1,0 +1,11 @@
+// Validating benchmarks:
+//    * Only Windows and Linux are supported in DisassemblyDiagnoser without Mono. Current OS is Darwin 24.3.0 Darwin Kernel Version 24.3.0: Thu Jan  2 20:22:00 PST 2025; root:xnu-11215.81.4~3/RELEASE_X86_64
+
+//    * Assembly SharpExperiments.Benchmarks which defines benchmarks references non-optimized SharpExperiments.Tests
+	If you own this dependency, please, build it in RELEASE.
+	If you don't, you can disable this policy by using 'config.WithOptions(ConfigOptions.DisableOptimizationsValidator)'.
+
+//    * Assembly SharpExperiments.Benchmarks which defines benchmarks is non-optimized
+Benchmark was built without optimization enabled (most probably a DEBUG configuration). Please, build it in RELEASE.
+If you want to debug the benchmarks, please see https://benchmarkdotnet.org/articles/guides/troubleshooting.html#debugging-benchmarks.
+
