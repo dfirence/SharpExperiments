@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>SharpExperiements.Benchmarks</RootNamespace>
+    <AssemblyName>SharpExperiements.Benchmarks</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SharpExperiements\SharpExperiements.csproj" />
+    <ProjectReference Include="..\SharpExperiements.Tests\SharpExperiements.Tests.csproj" />
+  </ItemGroup>
+</Project>
