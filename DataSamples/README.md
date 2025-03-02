@@ -1,2 +1,2 @@
-## SharpExperiements DataSamples
-Datasamples used by `SharpExperiements` during development.
+## SharpExperiments DataSamples
+Datasamples used by `SharpExperiments` during development.

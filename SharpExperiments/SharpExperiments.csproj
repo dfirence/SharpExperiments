@@ -6,8 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <!-- RootNamespace and AssemblyName will use the sourceName placeholder -->
-    <RootNamespace>SharpExperiements</RootNamespace>
-    <AssemblyName>SharpExperiements</AssemblyName>
+    <RootNamespace>SharpExperiments</RootNamespace>
+    <AssemblyName>SharpExperiments</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 

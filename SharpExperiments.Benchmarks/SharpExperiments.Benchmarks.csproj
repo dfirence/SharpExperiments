@@ -4,15 +4,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>SharpExperiements.Benchmarks</RootNamespace>
-    <AssemblyName>SharpExperiements.Benchmarks</AssemblyName>
+    <RootNamespace>SharpExperiments.Benchmarks</RootNamespace>
+    <AssemblyName>SharpExperiments.Benchmarks</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharpExperiements\SharpExperiements.csproj" />
-    <ProjectReference Include="..\SharpExperiements.Tests\SharpExperiements.Tests.csproj" />
+    <ProjectReference Include="..\SharpExperiments\SharpExperiments.csproj" />
+    <ProjectReference Include="..\SharpExperiments.Tests\SharpExperiments.Tests.csproj" />
   </ItemGroup>
 </Project>

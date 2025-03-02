@@ -5,8 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <IsTestProject>true</IsTestProject>
     <Nullable>enable</Nullable>
-    <RootNamespace>SharpExperiements.Tests</RootNamespace>
-    <AssemblyName>SharpExperiements.Tests</AssemblyName>
+    <RootNamespace>SharpExperiments.Tests</RootNamespace>
+    <AssemblyName>SharpExperiments.Tests</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
@@ -27,6 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SharpExperiements\SharpExperiements.csproj" />
+    <ProjectReference Include="..\SharpExperiments\SharpExperiments.csproj" />
   </ItemGroup>
 </Project>

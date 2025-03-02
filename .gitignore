@@ -6,7 +6,7 @@ node_modules/
 **/**/node_modules
 
 # Ignore Benchmarks
-./SharpExperiements.Benchmarks/BenchmarkDotnet.Artifacts/*
+./SharpExperiments.Benchmarks/BenchmarkDotnet.Artifacts/*
 
 # Ignore user-specific files
 *.user

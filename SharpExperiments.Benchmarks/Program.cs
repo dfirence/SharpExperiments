@@ -1,4 +1,4 @@
-﻿namespace SharpExperiements.Benchmarks;
+﻿namespace SharpExperiments.Benchmarks;
 using BenchmarkDotNet.Running;
 
 class Program
@@ -6,6 +6,6 @@ class Program
     static void Main(string[] args)
     {
         // Run benchmarks
-        var _ = BenchmarkRunner.Run<SharpExperiementsBenchmarks>();
+        var _ = BenchmarkRunner.Run<SharpExperimentsBenchmarks>();
     }
 }

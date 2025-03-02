@@ -1,4 +1,4 @@
-namespace SharpExperiements.Tests;
+namespace SharpExperiments.Tests;
 using Xunit;
 using FluentAssertions;
 

@@ -1,21 +1,21 @@
 using BenchmarkDotNet.Attributes;
-using SharpExperiements;  // Reference your main project here
+using SharpExperiments;  // Reference your main project here
 
-namespace SharpExperiements.Benchmarks
+namespace SharpExperiments.Benchmarks
 {
     [MemoryDiagnoser]
-    public class SharpExperiementsBenchmarks
+    public class SharpExperimentsBenchmarks
     {
 
         /// <summary>
-        /// SharpExperiementsBenchmark constructor
+        /// SharpExperimentsBenchmark constructor
         /// </summary>
-        public SharpExperiementsBenchmarks()
+        public SharpExperimentsBenchmarks()
         {
         }
 
         /// <summary>
-        /// SharpExperiements method to benchmark
+        /// SharpExperiments method to benchmark
         /// </summary>
         [Benchmark]
         public void BenchmarkMethod1()
@@ -23,7 +23,7 @@ namespace SharpExperiements.Benchmarks
         }
 
         /// <summary>
-        /// SharpExperiements method to benchmark
+        /// SharpExperiments method to benchmark
         /// </summary>
         [Benchmark]
         public void BenchmarkMethod2()
