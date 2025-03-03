@@ -185,7 +185,7 @@ public static class Murmur3
         
         // Rent a buffer from the shared array pool
         byte[] byteBuffer = ArrayPool<byte>.Shared.Rent(byteCount);
-        int actualLemgth = 0;
+        int actualLength = 0;
         
         try
         {
