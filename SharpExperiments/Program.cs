@@ -10,7 +10,7 @@ public class Program
         if (args.Length > 0 && args[0].Equals("--repl", StringComparison.OrdinalIgnoreCase))
         {
             // Start the interactive REPL mode
-            REPL.Start();
+            REPLConsole.Start();
         }
         else
         {

@@ -3,7 +3,7 @@ namespace SharpExperiments.REPL;
 using System;
 using System.Collections.Generic;
 
-public static class REPL
+public static class REPLConsole
 {
     private static bool _isRunning = true;
     private static string _currentModule = string.Empty;
