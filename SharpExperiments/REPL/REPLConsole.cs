@@ -219,16 +219,20 @@ public static class REPLConsole
         string text = parts[0].Trim();
         uint seed = parts.Length > 1 && uint.TryParse(parts[1], out uint s) ? s : 0; // Default seed = 0
 
-        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(text);
-        (ulong h1, ulong h2) = Murmur3.CreateHash(bytes, seed);
+        (ulong h1, ulong h2) = Murmur3.HashItem(text, seed);
+        if (h1 == uint.MinValue && h2 == uint.MinValue)
+        {
+            ColorPalette.Error($"Error, to fix later| Default Value From Null Return");
+            return;
+        }
 
-        ColorPalette.Success($"\nMurmur3 Hash of '{text}':");
+        ColorPalette.Info($"\nMurmur3 Hash of '{text}':");
         Console.WriteLine($@"
-        
-        h1      : {h1}
-        h2      : {h2}
-        Seed    : {seed}
-        
+        Final Hash (Hex from `h1`,`h2`) :   {h1:X16}{h2:X16}
+        Final Hash (ulong XOR)          :   {h1 ^ h2}
+        h1                              :   {h1}
+        h2                              :   {h2}
+        Seed                            :   {seed}
         ");
     }
 }

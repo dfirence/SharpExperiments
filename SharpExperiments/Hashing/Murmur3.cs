@@ -20,6 +20,80 @@ using System.Text;
 /// </summary>
 public static class Murmur3
 {
+    private static (ulong h1, ulong h2) s_default_invalid = (ulong.MinValue, ulong.MinValue);
+    private static string c_null_murmur3_string = "00000000000000000000000000000000";
+
+    /// <summary>
+    /// Computes a 64-bit hash from the 128-bit Murmur3 hash of a given string
+    /// by performing a XOR operation on the two 64-bit halves of the hash.
+    /// </summary>
+    /// <param name="value">The input string to hash.</param>
+    /// <param name="seed">An optional seed value for the hash function. Defaults to 0.</param>
+    /// <returns>
+    /// A 64-bit hash value derived by XOR-ing the two 64-bit components of the 128-bit Murmur3 hash.
+    /// If the input is null or empty, or if the hash computation results in an invalid value, 
+    /// the method returns the default invalid hash (`ulong.MinValue`).
+    /// </returns>
+    public static ulong GetXorHash(string value, uint seed = 0)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return s_default_invalid.h1;
+        }
+
+        (ulong h1, ulong h2) = HashItem(value, seed);
+
+        if (h1 == s_default_invalid.h1 && h2 == s_default_invalid.h2)
+        {
+            return s_default_invalid.h1;
+        }
+
+        return h1 ^ h2;
+    }
+
+    /// <summary>
+    /// Computes a 128-bit Murmur3 hash for the given input string.
+    /// </summary>
+    /// <param name="value">The input string to hash.</param>
+    /// <param name="seed">An optional seed value for the hash function. Defaults to 0.</param>
+    /// <returns>
+    /// A 32-character hexadecimal string representing the 128-bit hash of the input string,
+    /// If the computed hash is invalid, a default null Murmur3 hash ("00000000000000000000000000000000") is returned.
+    /// </returns>
+    public static string? GetStringHash(string value, uint seed = 0)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return c_null_murmur3_string;
+        }
+
+        (ulong h1, ulong h2) = HashItem(value, seed);
+
+        if (h1 == s_default_invalid.h1 && h2 == s_default_invalid.h2)
+        {
+            return c_null_murmur3_string;
+        }
+
+        return $"{h1:X16}{h2:X16}";
+    }
+
+    /// <summary>
+    /// Generates a Murmur3 tuple of 2 64bit ulong values. These values represent the
+    /// the Murmur3 hashes computed for the string value passed by the caller.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="seed"></param>
+    /// <returns>null if invalid value, else tuple of ulong</returns>
+    public static (ulong, ulong) HashItem(string value, uint seed = 0)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return s_default_invalid;
+        }
+        byte[] bytes = Encoding.UTF8.GetBytes(value);
+        return CreateHash(bytes, seed);
+    }
+
     /// <summary>
     /// Computes a **128-bit MurmurHash3** hash for the given byte array.
     /// Optimized for **64-bit architectures** and produces a **128-bit hash**
@@ -28,7 +102,7 @@ public static class Murmur3
     /// <param name="data">The input byte array to hash.</param>
     /// <param name="seed">A 32-bit seed value (useful for independent hash computations).</param>
     /// <returns>A tuple containing two **64-bit hash values (h1, h2)**, forming a **128-bit Murmur hash**.</returns>
-    public static (ulong, ulong) CreateHash(ReadOnlySpan<byte> data, uint seed)
+    public static (ulong, ulong) CreateHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         // MurmurHash3 constants for mixing
         const ulong c1 = 0x87c37b91114253d5UL;
