@@ -12,6 +12,7 @@
 // | Murmur3_UTF32_CreateHash   | .NET 6.0 | .NET 6.0 | 200       |   155.93 ns |  1.245 ns |  1.164 ns |   155.64 ns |         - |
 // | Murmur3_UTF8_CreateHash    | .NET 6.0 | .NET 6.0 | 200       |    41.11 ns |  0.103 ns |  0.096 ns |    41.13 ns |         - |
 // | Murmur3_ASCII_CreateHash   | .NET 6.0 | .NET 6.0 | 200       |    41.18 ns |  0.107 ns |  0.095 ns |    41.21 ns |         - |
+//
 // | Murmur3_UNICODE_CreateHash | .NET 8.0 | .NET 8.0 | 200       |    83.06 ns |  0.472 ns |  0.441 ns |    83.02 ns |         - |
 // | Murmur3_UTF32_CreateHash   | .NET 8.0 | .NET 8.0 | 200       |   153.27 ns |  0.636 ns |  0.564 ns |   153.12 ns |         - |
 // | Murmur3_UTF8_CreateHash    | .NET 8.0 | .NET 8.0 | 200       |    39.76 ns |  0.174 ns |  0.163 ns |    39.71 ns |         - |

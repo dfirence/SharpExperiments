@@ -16,7 +16,7 @@ public class Murmur3Tests
     public void Murmur3_InputValue_CorrectHexHash()
     {
         // Default Seed of `0` for string GooneyGooGoo
-        // - [Online TestTool -ShoreLabs](https://murmurhash.shorelabs.com/)
+        // - [Online TestTool - ShoreLabs](https://murmurhash.shorelabs.com/)
         string seed_0_expectedValue = "c0250dde63f19e35e1da5e574c1f3f12";
         string seed_42_expectedValue = "9668550ca6f44c4873ef1cf36e5dc3f2";
 

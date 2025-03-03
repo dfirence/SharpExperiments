@@ -37,9 +37,6 @@ public class StdLib_StringComparisonBenchmark
 {
     private StringComparisonTests tests = new();
 
-    /// <summary>
-    /// SharpExperimentsBenchmark constructor
-    /// </summary>
     public StdLib_StringComparisonBenchmark()
     {
     }
