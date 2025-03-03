@@ -34,7 +34,7 @@ public static class REPLConsole
 
     private static string GetPrompt()
     {
-        string basePrompt = ColorPalette.DimGray("sharpExperiments");
+        string basePrompt = ColorPalette.LightGray("sharpExperiments");
 
         if (!string.IsNullOrEmpty(_currentModule))
         {
