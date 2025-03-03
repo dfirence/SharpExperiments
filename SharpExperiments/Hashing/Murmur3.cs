@@ -90,7 +90,7 @@ public static class Murmur3
         // - `k2_tail` represents the **second half** (high 8 bytes) if there are more than 8 remaining bytes.
         // - These words are constructed by shifting bytes into position and then processed similarly to full 64-bit words.
         ulong k1_tail = 0, k2_tail = 0;
-        
+
         // The `switch-case` mechanism processes each remaining byte one by one.
         // - Instead of a loop, we use **fall-through case statements with `goto case`** to efficiently build the words.
         // - This structure mimics the original MurmurHash3 C++ implementation, which uses implicit fall-through.
@@ -109,26 +109,28 @@ public static class Murmur3
             case 12: k2_tail ^= (ulong)data[i + 11] << 24; goto case 11;
             case 11: k2_tail ^= (ulong)data[i + 10] << 16; goto case 10;
             case 10: k2_tail ^= (ulong)data[i + 9] << 8; goto case 9;
-            case 9:  k2_tail ^= (ulong)data[i + 8]; 
-                     k2_tail *= c2; 
-                     k2_tail = (k2_tail << 33) | (k2_tail >> 31); 
-                     k2_tail *= c1; 
-                     h2 ^= k2_tail;
-                     goto case 8;
+            case 9:
+                k2_tail ^= (ulong)data[i + 8];
+                k2_tail *= c2;
+                k2_tail = (k2_tail << 33) | (k2_tail >> 31);
+                k2_tail *= c1;
+                h2 ^= k2_tail;
+                goto case 8;
 
-            case 8:  k1_tail ^= (ulong)data[i + 7] << 56; goto case 7;
-            case 7:  k1_tail ^= (ulong)data[i + 6] << 48; goto case 6;
-            case 6:  k1_tail ^= (ulong)data[i + 5] << 40; goto case 5;
-            case 5:  k1_tail ^= (ulong)data[i + 4] << 32; goto case 4;
-            case 4:  k1_tail ^= (ulong)data[i + 3] << 24; goto case 3;
-            case 3:  k1_tail ^= (ulong)data[i + 2] << 16; goto case 2;
-            case 2:  k1_tail ^= (ulong)data[i + 1] << 8; goto case 1;
-            case 1:  k1_tail ^= (ulong)data[i]; 
-                     k1_tail *= c1; 
-                     k1_tail = (k1_tail << 31) | (k1_tail >> 33); 
-                     k1_tail *= c2; 
-                     h1 ^= k1_tail;
-                     break;
+            case 8: k1_tail ^= (ulong)data[i + 7] << 56; goto case 7;
+            case 7: k1_tail ^= (ulong)data[i + 6] << 48; goto case 6;
+            case 6: k1_tail ^= (ulong)data[i + 5] << 40; goto case 5;
+            case 5: k1_tail ^= (ulong)data[i + 4] << 32; goto case 4;
+            case 4: k1_tail ^= (ulong)data[i + 3] << 24; goto case 3;
+            case 3: k1_tail ^= (ulong)data[i + 2] << 16; goto case 2;
+            case 2: k1_tail ^= (ulong)data[i + 1] << 8; goto case 1;
+            case 1:
+                k1_tail ^= (ulong)data[i];
+                k1_tail *= c1;
+                k1_tail = (k1_tail << 31) | (k1_tail >> 33);
+                k1_tail *= c2;
+                h1 ^= k1_tail;
+                break;
         }
 
         // Finalization - Ensuring Strong Avalanche Properties
@@ -177,16 +179,17 @@ public static class Murmur3
     {
         string str = item?.ToString()?.Trim() ?? string.Empty;
         int byteCount = Encoding.UTF8.GetByteCount(str);
-        
+
         if (byteCount == 0)
         {
             return;
         }
-        
-        // Rent a buffer from the shared array pool
+
+        // Rent a buffer from the shared array pool.
+        // Gets cleared in the `finally`.
         byte[] byteBuffer = ArrayPool<byte>.Shared.Rent(byteCount);
         int actualLength = 0;
-        
+
         try
         {
             // Convert the string to UTF-8 bytes and store the actual length used

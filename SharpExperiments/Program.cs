@@ -18,8 +18,9 @@ public class Program
             carlos_diaz | @dfirence
             
             SharpExperiments CLI
-                Usage:
-                    --repl      Start the interactive REPL mode.
+            
+            Usage:
+                --repl      Start the interactive REPL mode.
             ");
         }
     }
