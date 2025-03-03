@@ -105,13 +105,20 @@ public static class REPLConsole
 
         switch (command)
         {
+            case "h":
             case "help":
                 PrintHelp();
                 break;
+            case "back":
+                ExitModule();
+                break;
+            case "q":
+            case "quit": 
             case "exit":
                 _isRunning = false;
                 Console.WriteLine();
                 break;
+            case "cls": 
             case "clear":
                 Console.Clear();
                 break;
@@ -136,6 +143,17 @@ public static class REPLConsole
         Console.WriteLine("  clear        - Clear the screen (or use CTRL+L)");
     }
 
+    private static void ExitModule()
+    {
+        if (string.IsNullOrEmpty(_currentModule))
+        {
+            ColorPalette.Warning("Already at the top level.");
+            return;
+        }
+
+        _currentModule = "";
+    }
+    
     private static void UseModule(string module)
     {
         if (string.IsNullOrEmpty(module))
