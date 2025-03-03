@@ -182,19 +182,28 @@ public static class REPLConsole
         }
     }
     
-    private static void RunMurmur3(string text)
+    private static void RunMurmur3(string input)
     {
-        if (string.IsNullOrEmpty(text))
+        if (string.IsNullOrEmpty(input))
         {
-            ColorPalette.Error("Usage: murmur3 <text>");
+            ColorPalette.Error("Usage: murmur3 <text> [--seed <number>]");
             return;
         }
 
-        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(text);
-        (ulong h1, ulong h2) = Murmur3.CreateHash(bytes, 0);
+        var parts = input.Split(" --seed ", StringSplitOptions.RemoveEmptyEntries);
+        string text = parts[0].Trim();
+        uint seed = parts.Length > 1 && uint.TryParse(parts[1], out uint s) ? s : 0; // Default seed = 0
 
-        ColorPalette.Success($"Murmur3 Hash of '{text}':");
-        Console.WriteLine($"  h1: {h1}");
-        Console.WriteLine($"  h2: {h2}");
+        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(text);
+        (ulong h1, ulong h2) = Murmur3.CreateHash(bytes, seed);
+
+        ColorPalette.Success($"\nMurmur3 Hash of '{text}':");
+        Console.WriteLine($@"
+        
+        h1      : {h1}
+        h2      : {h2}
+        Seed    : {seed}
+        
+        ");
     }
 }
