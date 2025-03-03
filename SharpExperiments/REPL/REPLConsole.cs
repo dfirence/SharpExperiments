@@ -7,22 +7,26 @@ using SharpExperiments.Hashing;
 
 public static class REPLConsole
 {
-    private static bool _isRunning = true;
-    private static string _currentModule = string.Empty;
+    private static bool s_isRunning = true;
+    private static string s_currentModule = string.Empty;
+    private const string c_promptName = "sharpExperiments";
 
     public static void Start()
     {
         Console.Clear();
         ColorPalette.Info("SharpExperiments REPL - Type 'help' for commands, 'exit' to quit.");
 
-        while (_isRunning)
+        while (s_isRunning)
         {
             // Display prompt
             ColorPalette.Prompt(GetPrompt());
 
             // Read user input
             string? input = ReadInput();
-            if (string.IsNullOrWhiteSpace(input)) continue;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                continue;
+            }
 
             // Store command in history
             REPLHistory.Add(input);
@@ -34,11 +38,11 @@ public static class REPLConsole
 
     private static string GetPrompt()
     {
-        string basePrompt = ColorPalette.LightGray("sharpExperiments");
+        string basePrompt = ColorPalette.LightGray(c_promptName);
 
-        if (!string.IsNullOrEmpty(_currentModule))
+        if (!string.IsNullOrEmpty(s_currentModule))
         {
-            string moduleSuffix = ColorPalette.BoldBrightGreen($".{_currentModule}");
+            string moduleSuffix = ColorPalette.BoldBrightGreen($".{s_currentModule}");
             return $"{basePrompt}{moduleSuffix}|> ";
         }
 
@@ -113,26 +117,44 @@ public static class REPLConsole
 
         switch (command)
         {
+            //----------------------
+            // Back Command, exits Module
+            //----------------------
+            case "back":
+                ExitModule();
+                break;
+            //----------------------
+            // Clear REPL Screen
+            //----------------------
+            case "cls":
+            case "clear":
+                Console.Clear();
+                break;
+            //----------------------
+            // Exit REPL
+            //----------------------
+            case "q":
+            case "quit":
+            case "exit":
+                s_isRunning = false;
+                Console.WriteLine();
+                break;
+            //----------------------
+            // Show Help
+            //----------------------
             case "h":
             case "help":
                 PrintHelp();
                 break;
-            case "back":
-                ExitModule();
-                break;
-            case "q":
-            case "quit": 
-            case "exit":
-                _isRunning = false;
-                Console.WriteLine();
-                break;
-            case "cls": 
-            case "clear":
-                Console.Clear();
-                break;
+            //----------------------
+            // Enable MODULE
+            //----------------------
             case "use":
                 UseModule(args);
                 break;
+            //----------------------
+            // Hashing: Murmur3
+            //----------------------
             case "murmur3":
                 RunMurmur3(args);
                 break;
@@ -144,24 +166,26 @@ public static class REPLConsole
 
     private static void PrintHelp()
     {
-        ColorPalette.Info("Available Commands:");
-        Console.WriteLine("  help         - Show this help message");
-        Console.WriteLine("  use <module> - Enter a specific module (hashing, benchmarks, bits)");
-        Console.WriteLine("  exit         - Exit the REPL");
-        Console.WriteLine("  clear        - Clear the screen (or use CTRL+L)");
+        ColorPalette.Info("\nAvailable Commands:");
+        Console.WriteLine($@"
+            help            - Show this help message
+            clear           - Clear the screen (or use CTRL+L, or use cls)
+            exit            - Exit the REPL
+            use <module>    - Enter a specific module (example, `use hashing`)
+        ");
     }
 
     private static void ExitModule()
     {
-        if (string.IsNullOrEmpty(_currentModule))
+        if (string.IsNullOrEmpty(s_currentModule))
         {
             ColorPalette.Warning("Already at the top level.");
             return;
         }
 
-        _currentModule = "";
+        s_currentModule = "";
     }
-    
+
     private static void UseModule(string module)
     {
         if (string.IsNullOrEmpty(module))
@@ -170,18 +194,18 @@ public static class REPLConsole
             return;
         }
 
-        var validModules = new HashSet<string> { "hashing", "benchmarks", "bits" };
+        var validModules = new HashSet<string> { "hashing" };
 
         if (validModules.Contains(module.ToLower()))
         {
-            _currentModule = module.ToLower();
+            s_currentModule = module.ToLower();
         }
         else
         {
             ColorPalette.Error($"Module '{module}' not found. Available modules: hashing, benchmarks, bits");
         }
     }
-    
+
     private static void RunMurmur3(string input)
     {
         if (string.IsNullOrEmpty(input))

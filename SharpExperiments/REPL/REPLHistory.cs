@@ -10,20 +10,32 @@ public static class REPLHistory
 
     public static void Add(string command)
     {
-        if (History.Count >= 10) History.RemoveAt(0);
+        if (History.Count >= 10)
+        {
+            History.RemoveAt(0);
+        }
+
         History.Add(command);
         _currentIndex = History.Count;
     }
 
     public static string GetPrevious()
     {
-        if (_currentIndex > 0) _currentIndex--;
+        if (_currentIndex > 0)
+        {
+            _currentIndex--;
+        }
+
         return History[_currentIndex];
     }
 
     public static string GetNext()
     {
-        if (_currentIndex < History.Count - 1) _currentIndex++;
+        if (_currentIndex < History.Count - 1)
+        {
+            _currentIndex++;
+        }
+
         return History[_currentIndex];
     }
 }

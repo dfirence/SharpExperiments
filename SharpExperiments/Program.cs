@@ -14,9 +14,13 @@ public class Program
         }
         else
         {
-            Console.WriteLine("SharpExperiments CLI");
-            Console.WriteLine("Usage:");
-            Console.WriteLine("  --repl     Start the interactive REPL mode.");
+            Console.WriteLine($@"
+            carlos_diaz | @dfirence
+            
+            SharpExperiments CLI
+                Usage:
+                    --repl      Start the interactive REPL mode.
+            ");
         }
     }
 }
