@@ -70,22 +70,23 @@ public static class Murmur3_V2
 
         #if NET7_0_OR_GREATER
         // SIMD-accelerated processing for .NET 7+
-        if (Avx2.IsSupported && length >= 16)
+        if (Sse2.IsSupported && length >= 16)
         {
             while (length >= 16)
             {
-                Vector128<ulong> v1 = Unsafe.ReadUnaligned<Vector128<ulong>>(ref MemoryMarshal.GetReference(data.Slice(i)));
-                Vector128<ulong> v2 = Unsafe.ReadUnaligned<Vector128<ulong>>(ref MemoryMarshal.GetReference(data.Slice(i + 8)));
+                Vector128<ulong> v1 = Sse2.LoadVector128((ulong*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(data.Slice(i))));
+                Vector128<ulong> v2 = Sse2.LoadVector128((ulong*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(data.Slice(i + 8))));
 
-                v1 = Avx2.Multiply(v1, Vector128.Create(c1));
-                v1 = Avx2.ShiftLeftLogical(v1, 31) | Avx2.ShiftRightLogical(v1, 33);
-                v1 = Avx2.Multiply(v1, Vector128.Create(c2));
-                h1 ^= v1.ToScalar();
+                // Perform multiplication
+                v1 = Sse2.Multiply(v1, Vector128.Create(c1));
+                v1 = Sse2.ShiftLeftLogical(v1.AsInt64(), 31).AsUInt64() | Sse2.ShiftRightLogical(v1.AsInt64(), 33).AsUInt64();
+                v1 = Sse2.Multiply(v1, Vector128.Create(c2));
+                h1 ^= v1.GetElement(0);
 
-                v2 = Avx2.Multiply(v2, Vector128.Create(c2));
-                v2 = Avx2.ShiftLeftLogical(v2, 33) | Avx2.ShiftRightLogical(v2, 31);
-                v2 = Avx2.Multiply(v2, Vector128.Create(c1));
-                h2 ^= v2.ToScalar();
+                v2 = Sse2.Multiply(v2, Vector128.Create(c2));
+                v2 = Sse2.ShiftLeftLogical(v2.AsInt64(), 33).AsUInt64() | Sse2.ShiftRightLogical(v2.AsInt64(), 31).AsUInt64();
+                v2 = Sse2.Multiply(v2, Vector128.Create(c1));
+                h2 ^= v2.GetElement(0);
 
                 i += 16;
                 length -= 16;
