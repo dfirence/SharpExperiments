@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Add any necessary dependencies here -->
+    <Compile Include="REPL/*.cs" />
   </ItemGroup>
 
 </Project>
