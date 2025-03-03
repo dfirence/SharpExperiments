@@ -5,7 +5,7 @@
     "type": "module",
     "version": "1.0.0",
     "scripts": {
-        "benchmarks": "cd ./SharpExperiment.Benchmarks && dotnet run -c Release --framework net8.0",
+        "benchmarks": "cd ./SharpExperiments.Benchmarks && dotnet run -c Release --framework net8.0",
         "repl": "cd ./SharpExperiments && dotnet run -c Release -- --repl"
     },
     "keywords": [],
