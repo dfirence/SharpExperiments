@@ -11,8 +11,4 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="REPL/*.cs" />
-  </ItemGroup>
-
 </Project>

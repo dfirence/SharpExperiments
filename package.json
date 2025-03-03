@@ -4,6 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "repl": "cd ./SharpExperiments && dotnet run -c Release -- --repl"
   },
   "keywords": [],
   "author": "",
