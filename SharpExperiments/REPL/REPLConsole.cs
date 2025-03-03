@@ -2,6 +2,8 @@ namespace SharpExperiments.REPL;
 
 using System;
 using System.Collections.Generic;
+using SharpExperiments.Hashing;
+
 
 public static class REPLConsole
 {
