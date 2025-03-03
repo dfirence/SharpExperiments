@@ -22,5 +22,6 @@ public static class ColorPalette
     public static void Error(string message) => Print(message, ConsoleColor.Red);
     public static void Info(string message) => Print(message, ConsoleColor.Cyan);
     public static void Debug(string message) => Print(message, ConsoleColor.Gray);
-    public static void Prompt(string message) => PrintInline(message, ConsoleColor.Yellow);
+    public static void Prompt(string message) => PrintInline(message, ConsoleColor.White);
+    public static void Warning(string message) => PrintInline(message, ConsoleColor.Yellow);
 }
