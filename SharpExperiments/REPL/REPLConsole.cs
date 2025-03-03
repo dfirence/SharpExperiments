@@ -116,8 +116,8 @@ public static class REPLConsole
             case "use":
                 UseModule(args);
                 break;
-            case "back":
-                _currentModule = "";
+            case "murmur3":
+                RunMurmur3(args);
                 break;
             default:
                 ColorPalette.Error("Unknown command. Type 'help' for a list of commands.");
@@ -152,5 +152,21 @@ public static class REPLConsole
         {
             ColorPalette.Error($"Module '{module}' not found. Available modules: hashing, benchmarks, bits");
         }
+    }
+    
+    private static void RunMurmur3(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            ColorPalette.Error("Usage: murmur3 <text>");
+            return;
+        }
+
+        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(text);
+        (ulong h1, ulong h2) = Murmur3.CreateHash(bytes, 0);
+
+        ColorPalette.Success($"Murmur3 Hash of '{text}':");
+        Console.WriteLine($"  h1: {h1}");
+        Console.WriteLine($"  h2: {h2}");
     }
 }
