@@ -1,13 +1,15 @@
 {
-  "name": "nodejs-template-helper",
-  "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "repl": "cd ./SharpExperiments && dotnet run -c Release -- --repl"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+    "main": "index.js",
+    "name": "nodejs-template-helper",
+    "private": true,
+    "type": "module",
+    "version": "1.0.0",
+    "scripts": {
+        "benchmarks": "cd ./SharpExperiment.Benchmarks && dotnet run -c Release --framework net8.0",
+        "repl": "cd ./SharpExperiments && dotnet run -c Release -- --repl"
+    },
+    "keywords": [],
+    "author": "carlos_diaz|dfirence@",
+    "license": "ISC",
+    "description": "Convenient Wrapper to run commands in this C# repo."
 }
