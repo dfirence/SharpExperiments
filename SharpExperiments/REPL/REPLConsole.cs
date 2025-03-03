@@ -10,6 +10,7 @@ public static class REPLConsole
     private static bool s_isRunning = true;
     private static string s_currentModule = string.Empty;
     private const string c_promptName = "sharpExperiments";
+    private const string c_unknownCommand = "Unknown command. Type 'help' for a list of commands.";
 
     public static void Start()
     {
@@ -159,7 +160,7 @@ public static class REPLConsole
                 RunMurmur3(args);
                 break;
             default:
-                ColorPalette.Error("Unknown command. Type 'help' for a list of commands.");
+                ColorPalette.Error(c_unknownCommand);
                 break;
         }
     }
