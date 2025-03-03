@@ -34,7 +34,15 @@ public static class REPLConsole
 
     private static string GetPrompt()
     {
-        return string.IsNullOrEmpty(_currentModule) ? "sharpExperiments|> " : $"sharpExperiments.{_currentModule}|> ";
+        string basePrompt = ColorPalette.DimGray("sharpExperiments");
+
+        if (!string.IsNullOrEmpty(_currentModule))
+        {
+            string moduleSuffix = ColorPalette.BoldBrightGreen($".{_currentModule}");
+            return $"{basePrompt}{moduleSuffix}|> ";
+        }
+
+        return $"{basePrompt}|> ";
     }
 
     private static string ReadInput()

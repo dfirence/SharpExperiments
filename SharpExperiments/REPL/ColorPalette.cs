@@ -1,27 +1,33 @@
 namespace SharpExperiments.REPL;
-
 using System;
 
 public static class ColorPalette
 {
-    public static void Print(string message, ConsoleColor color)
+    public static string DimGray(string text) => $"\u001b[90m{text}\u001b[0m"; // ANSI for Dim Gray
+    public static string BoldBrightGreen(string text) => $"\u001b[1;92m{text}\u001b[0m"; // ANSI for Bright Green (Bold)
+    
+    public static void Prompt(string text)
     {
-        Console.ForegroundColor = color;
-        Console.WriteLine(message);
-        Console.ResetColor();
+        Console.Write(text);
     }
 
-    public static void PrintInline(string message, ConsoleColor color)
+    public static void Info(string text)
     {
-        Console.ForegroundColor = color;
-        Console.Write(message);
-        Console.ResetColor();
+        Console.WriteLine($"\u001b[36m{text}\u001b[0m"); // Cyan
     }
 
-    public static void Success(string message) => Print(message, ConsoleColor.Green);
-    public static void Error(string message) => Print(message, ConsoleColor.Red);
-    public static void Info(string message) => Print(message, ConsoleColor.Cyan);
-    public static void Debug(string message) => Print(message, ConsoleColor.Gray);
-    public static void Prompt(string message) => PrintInline(message, ConsoleColor.White);
-    public static void Warning(string message) => PrintInline(message, ConsoleColor.Yellow);
+    public static void Success(string text)
+    {
+        Console.WriteLine($"\u001b[32m{text}\u001b[0m"); // Green
+    }
+
+    public static void Warning(string text)
+    {
+        Console.WriteLine($"\u001b[33m{text}\u001b[0m"); // Yellow
+    }
+
+    public static void Error(string text)
+    {
+        Console.WriteLine($"\u001b[31m{text}\u001b[0m"); // Red
+    }
 }
