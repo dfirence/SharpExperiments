@@ -10,6 +10,11 @@ using System.Text;
 /// This is a **non-cryptographic** hash function designed for high-speed hashing
 /// on **64-bit architectures**, commonly used in **Bloom filters, distributed systems,**
 /// and **probabilistic data structures**.
+//
+/// <para>**References:**</para>
+/// - [MurmurHash3 GitHub Repo](https://github.com/aappleby/smhasher)
+/// - [Original MurmurHash3 Paper](https://github.com/aappleby/smhasher/blob/master/MurmurHash3.cpp)
+///
 /// </summary>
 public static class Murmur3
 {
