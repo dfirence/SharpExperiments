@@ -96,9 +96,9 @@ public static class REPLConsole
                 s_isRunning = false;
                 Console.WriteLine();
                 break;
-            case "?":
             case "h":
             case "help":
+            case "?":
                 PrintHelp();
                 break;
             case "use":
@@ -106,37 +106,77 @@ public static class REPLConsole
                 break;
 
             //----------------------
-            // Module-Specific Commands (Must be inside a module)
+            // Module-Specific Commands (No Prefix Required)
             //----------------------
-            case "murmur3":
-                if (s_currentModule == "hashing")
-                {
-                    RunMurmur3(args);
-                }
-                else
-                {
-                    ColorPalette.Error("Command only available inside the 'hashing' module. Use 'use hashing' first.");
-                }
-
-                break;
-
-            case "bloom":
+            default:
                 if (s_currentModule == "bloom")
                 {
-                    RunBloomFilter(args);
+                    HandleBloomCommand(command, args);
+                }
+                else if (s_currentModule == "hashing")
+                {
+                    HandleHashingCommand(command, args);
                 }
                 else
                 {
-                    ColorPalette.Error("Command only available inside the 'bloom' module. Use 'use bloom' first.");
+                    ColorPalette.Error(c_unknownCommand);
                 }
-
-                break;
-
-            default:
-                ColorPalette.Error(c_unknownCommand);
                 break;
         }
     }
+
+    private static void HandleBloomCommand(string command, string args)
+    {
+        switch (command)
+        {
+            case "create":
+                CreateBloomFilter(args);
+                break;
+            case "add":
+                AddItemToBloom(args);
+                break;
+            case "maybe":
+                CheckMembership(args);
+                break;
+            case "hash":
+                ShowHash(args);
+                break;
+            case "show":
+                if (args.Equals("array", StringComparison.OrdinalIgnoreCase))
+                {
+                    bloomFilter?.ShowArrayGrid();
+                }
+                else if (args.Equals("config", StringComparison.OrdinalIgnoreCase))
+                {
+                    bloomFilter?.ShowConfiguration();
+                }
+                else
+                {
+                    goto default;
+                }
+                break;
+            case "count":
+                ShowInsertedCount();
+                break;
+            default:
+                ColorPalette.Error("Unknown Bloom Filter command. Type `?` for available commands.");
+                break;
+        }
+    }
+
+    private static void HandleHashingCommand(string command, string args)
+    {
+        switch (command)
+        {
+            case "murmur3":
+                RunMurmur3(args);
+                break;
+            default:
+                ColorPalette.Error("Unknown Hashing command. Type `?` for available commands.");
+                break;
+        }
+    }
+
 
     private static void PrintHelp()
     {
