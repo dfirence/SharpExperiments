@@ -2,7 +2,7 @@ namespace SharpExperiments.Hashing;
 
 using System;
 using System.Buffers;
-using System.Runtime.InteropServices;
+using System.Buffers.Binary;
 using System.Text;
 
 /// <summary>
@@ -122,10 +122,10 @@ public static class Murmur3
         while (length >= 16)
         {
             // Read two 64-bit words from the input data
-            // Using `MemoryMarshal.Read<ulong>` avoids unnecessary memory allocations, improving performance.
-            ulong k1 = MemoryMarshal.Read<ulong>(data.Slice(i));        // First 64-bit word (low 8 bytes)
-            ulong k2 = MemoryMarshal.Read<ulong>(data.Slice(i + 8));    // Second 64-bit word (high 8 bytes)
-
+            // Using `BinaryPrimiyives.ReadUint64LittleEndian` avoids unnecessary memory allocations, improving performance.  
+            ulong k1 = BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(i));      // First 64-bit word (low 8 bytes)
+            ulong k2 = BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(i + 8));  // Second 64-bit word (high 8 bytes)
+            
             // Mix K1 into h1
             // Each 64-bit word undergoes a transformation using bitwise shifts and multiplications.
             // These operations ensure that small changes in input propagate throughout the hash.
