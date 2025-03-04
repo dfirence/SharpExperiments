@@ -217,6 +217,18 @@ public class StandardBloomFilter<T>
         return _fpRate;
     }
 
+    // Returns the size of the bit array in bits
+    public int GetBitArraySize()
+    {
+        return _size;
+    }
+
+    // Returns the raw byte array storing Bloom filter bits
+    public byte[] GetRawBitArray()
+    {
+        return _bitArray;
+    }
+
     /// <summary>
     /// Checks whether the specified item **might be present** in the Bloom Filter.
     /// Since Bloom Filters allow false positives, a **true** result means the item

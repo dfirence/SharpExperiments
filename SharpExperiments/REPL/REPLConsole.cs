@@ -355,60 +355,81 @@ public static class REPLConsole
 
         Console.WriteLine("\n🔵 Running isolated false positive analysis...");
         Console.WriteLine($"📌 Simulated Filter Capacity: {expectedElements}");
-        Console.WriteLine($"🔹 Expected FP Rate: {expectedFpRate:P2}"); // FIXED: Shows `0.10%` instead of `0.001%`
+        Console.WriteLine($"🔹 Expected FP Rate: {expectedFpRate * 100:F1}%");
 
-        // Insert elements
-        for (int i = 0; i < expectedElements; i++)
-        {
-            testFilter.Add($"item_{i}");
-        }
-
-        // Verify inserted elements (Should return true)
-        Console.WriteLine("\n✅ Checking inserted elements:");
-        Console.WriteLine($"MightContain(\"item_1\"): {testFilter.MightContain("item_1")}");
-        Console.WriteLine($"MightContain(\"item_2\"): {testFilter.MightContain("item_2")}");
-        Console.WriteLine($"MightContain(\"item_3\"): {testFilter.MightContain("item_3")}");
-
-        // Hash debug comparison for an inserted element
-        Span<long> insertHashes = stackalloc long[testFilter.GetCurrentHashCount()];
+        // Move stackalloc OUTSIDE loop to avoid stack overflow
         Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
-
-        Murmur3.CreateHashes("item_2", insertHashes);
-        Murmur3.CreateHashes("item_2", lookupHashes);
-
-        Console.WriteLine($"Insert Hashes: {string.Join(", ", insertHashes.ToArray())}");
-        Console.WriteLine($"Lookup Hashes: {string.Join(", ", lookupHashes.ToArray())}");
-
-        // Check for non-inserted elements (Should return false or be a false positive)
-        Console.WriteLine("\n❌ Checking non-inserted elements (expecting false or FP):");
-        Console.WriteLine($"MightContain(\"not_inserted_1\"): {testFilter.MightContain("not_inserted_1")}");
-        Console.WriteLine($"MightContain(\"not_inserted_2\"): {testFilter.MightContain("not_inserted_2")}");
-        Console.WriteLine($"MightContain(\"not_inserted_3\"): {testFilter.MightContain("not_inserted_3")}");
-
-        // Run False Positive Test
-        int lookups = 1_000_000;
+        int totalLookups = 1_000_000;
         int falsePositives = 0;
         var random = new Random();
 
-        Console.WriteLine("\n🔎 Running false positive test...");
-        for (int i = 0; i < lookups; i++)
-        {
-            var invalid = $"random_{random.Next(1, int.MaxValue)}"; // Generate truly random values
+        int effectiveLimit = 0;
+        double observedFpRate = 0.0;
 
-            if (testFilter.MightContain(invalid))
+        // Insert elements and track false positives
+        for (int inserted = 0; inserted < expectedElements * 2; inserted++)
+        {
+            string testValue = $"test_{Guid.NewGuid()}";
+            testFilter.Add(testValue);
+
+            // Run false positive check every 10 insertions
+            if (inserted % 10 == 0)
             {
-                falsePositives++;
+                falsePositives = 0;
+
+                for (int i = 0; i < totalLookups; i++)
+                {
+                    string invalid = $"random_{i}";
+                    Murmur3.CreateHashes(invalid, lookupHashes);
+
+                    if (testFilter.MightContain(invalid))
+                    {
+                        falsePositives++;
+                    }
+                }
+
+                observedFpRate = (double)falsePositives / totalLookups;
+
+                if (observedFpRate > expectedFpRate)
+                {
+                    effectiveLimit = inserted;
+                    break;
+                }
             }
         }
 
-        // Calculate observed false positive rate
-        double fpRateObserved = (double)falsePositives / lookups;
+        // Print results
+        Console.WriteLine($"\n\tFalse Positives: {falsePositives.ToString("N0")} out of {totalLookups.ToString("N0")} Lookups");
+        Console.WriteLine($"\tInserted Items: {testFilter.GetCurrentFilterSize().ToString("N0")}");
+        Console.WriteLine($"\tExpected FP Rate: {expectedFpRate * 100:F1}%, Observed FP Rate: {observedFpRate * 100:F1}%");
+        Console.WriteLine("\n✅ Maximum number of items before exceeding expected false positive rate: " +
+                          $"{Math.Max(1, effectiveLimit).ToString("N0")} elements");
 
-        // Print results with corrected percentage format
-        Console.WriteLine("\n📊 Results:");
-        Console.WriteLine($"False Positives: {falsePositives} out of {lookups}");
-        Console.WriteLine($"Inserted Items: {testFilter.GetCurrentFilterSize()}");
-        Console.WriteLine($"Expected FP Rate: {expectedFpRate:P1}, Observed FP Rate: {fpRateObserved:P1}"); // FIXED!
+    }
+
+    private static int CountSetBits(StandardBloomFilter<string> filter)
+    {
+        byte[] bitArray = filter.GetRawBitArray(); // Method to return `_bitArray`
+        int count = 0;
+
+        foreach (byte b in bitArray)
+        {
+            count += CountBitsInByte(b);
+        }
+
+        return count;
+    }
+
+    // Efficiently counts '1' bits in a byte
+    private static int CountBitsInByte(byte b)
+    {
+        int count = 0;
+        while (b > 0)
+        {
+            count += b & 1;
+            b >>= 1;
+        }
+        return count;
     }
 
     private static void RunMurmur3(string input)
