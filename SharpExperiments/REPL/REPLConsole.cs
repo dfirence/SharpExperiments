@@ -135,6 +135,9 @@ public static class REPLConsole
             case "add":
                 AddItemToBloom(args);
                 break;
+            case "fptest":
+                RunFalsePositiveTest();
+                break;
             case "maybe":
                 CheckMembership(args);
                 break;
@@ -248,65 +251,6 @@ public static class REPLConsole
         }
     }
 
-    private static void RunBloomFilter(string args)
-    {
-        if (string.IsNullOrWhiteSpace(args))
-        {
-            ColorPalette.Error("Usage: bloom <command> [parameters]");
-            return;
-        }
-
-        var parts = args.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-        string subcommand = parts[0].ToLower();
-        string parameters = parts.Length > 1 ? parts[1] : "";
-
-        switch (subcommand)
-        {
-            case "create":
-                CreateBloomFilter(parameters);
-                break;
-
-            case "add":
-                AddItemToBloom(parameters);
-                break;
-
-            case "maybe":
-                CheckMembership(parameters);
-                break;
-
-            case "hash":
-                ShowHash(parameters);
-                break;
-
-            case "fptest":
-                RunFalsePositiveTest(parameters);
-                break;
-
-            case "show":
-                if (parameters.Equals("array", StringComparison.OrdinalIgnoreCase))
-                {
-                    bloomFilter?.ShowArrayGrid();
-                }
-                else if (parameters.Equals("config", StringComparison.OrdinalIgnoreCase))
-                {
-                    bloomFilter?.ShowConfiguration();
-                }
-                else
-                {
-                    goto default;
-                }
-                break;
-
-            case "count":
-                ShowInsertedCount();
-                break;
-
-            default:
-                PrintHelp();
-                break;
-        }
-    }
-
     private static void AddItemToBloom(string parameters)
     {
         if (bloomFilter == null)
@@ -396,14 +340,75 @@ public static class REPLConsole
         Console.WriteLine("\n");
     }
 
-    private static void RunFalsePositiveTest(string parameters)
+    private static void RunFalsePositiveTest()
     {
-        throw new NotImplementedException($"Not Implemented, yet...");
-        // if (bloomFilter == null)
-        // {
-        //     ColorPalette.Error("Error: No Bloom filter created. Use 'bloom create <n> <p>' first.");
-        //     return;
-        // }
+        if (bloomFilter == null)
+        {
+            ColorPalette.Error("Error: No Bloom filter created. Use 'bloom create <n> <p>' first.");
+            return;
+        }
+
+        int expectedElements = bloomFilter.GetAllocatedFilterSize();
+        double expectedFpRate = bloomFilter.GetFalsePositiveRate();
+
+        var testFilter = new StandardBloomFilter<string>(expectedElements, expectedFpRate);
+
+        Console.WriteLine("\n🔵 Running isolated false positive analysis...");
+        Console.WriteLine($"📌 Simulated Filter Capacity: {expectedElements}");
+        Console.WriteLine($"🔹 Expected FP Rate: {expectedFpRate:P2}"); // FIXED: Shows `0.10%` instead of `0.001%`
+
+        // Insert elements
+        for (int i = 0; i < expectedElements; i++)
+        {
+            testFilter.Add($"item_{i}");
+        }
+
+        // Verify inserted elements (Should return true)
+        Console.WriteLine("\n✅ Checking inserted elements:");
+        Console.WriteLine($"MightContain(\"item_1\"): {testFilter.MightContain("item_1")}");
+        Console.WriteLine($"MightContain(\"item_2\"): {testFilter.MightContain("item_2")}");
+        Console.WriteLine($"MightContain(\"item_3\"): {testFilter.MightContain("item_3")}");
+
+        // Hash debug comparison for an inserted element
+        Span<long> insertHashes = stackalloc long[testFilter.GetCurrentHashCount()];
+        Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
+
+        Murmur3.CreateHashes("item_2", insertHashes);
+        Murmur3.CreateHashes("item_2", lookupHashes);
+
+        Console.WriteLine($"Insert Hashes: {string.Join(", ", insertHashes.ToArray())}");
+        Console.WriteLine($"Lookup Hashes: {string.Join(", ", lookupHashes.ToArray())}");
+
+        // Check for non-inserted elements (Should return false or be a false positive)
+        Console.WriteLine("\n❌ Checking non-inserted elements (expecting false or FP):");
+        Console.WriteLine($"MightContain(\"not_inserted_1\"): {testFilter.MightContain("not_inserted_1")}");
+        Console.WriteLine($"MightContain(\"not_inserted_2\"): {testFilter.MightContain("not_inserted_2")}");
+        Console.WriteLine($"MightContain(\"not_inserted_3\"): {testFilter.MightContain("not_inserted_3")}");
+
+        // Run False Positive Test
+        int lookups = 1_000_000;
+        int falsePositives = 0;
+        var random = new Random();
+
+        Console.WriteLine("\n🔎 Running false positive test...");
+        for (int i = 0; i < lookups; i++)
+        {
+            var invalid = $"random_{random.Next(1, int.MaxValue)}"; // Generate truly random values
+
+            if (testFilter.MightContain(invalid))
+            {
+                falsePositives++;
+            }
+        }
+
+        // Calculate observed false positive rate
+        double fpRateObserved = (double)falsePositives / lookups;
+
+        // Print results with corrected percentage format
+        Console.WriteLine("\n📊 Results:");
+        Console.WriteLine($"False Positives: {falsePositives} out of {lookups}");
+        Console.WriteLine($"Inserted Items: {testFilter.GetCurrentFilterSize()}");
+        Console.WriteLine($"Expected FP Rate: {expectedFpRate:P1}, Observed FP Rate: {fpRateObserved:P1}"); // FIXED!
     }
 
     private static void RunMurmur3(string input)
