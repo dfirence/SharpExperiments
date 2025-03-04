@@ -354,26 +354,41 @@ public static class REPLConsole
         var testFilter = new StandardBloomFilter<string>(expectedElements, expectedFpRate);
 
         Console.WriteLine("\n🔵 Running isolated false positive analysis...");
-        Console.WriteLine($"📌 Simulated Filter Capacity: {expectedElements}");
+        Console.WriteLine($"📌 Simulated Filter Capacity: {expectedElements:N0}");
         Console.WriteLine($"🔹 Expected FP Rate: {expectedFpRate * 100:F1}%");
 
         // Move stackalloc OUTSIDE loop to avoid stack overflow
         Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
-        int totalLookups = 1_000_000;
+
+        // Adjust lookup count for large filters
+        int totalLookups = expectedElements > 5000 ? 500_000 : 1_000_000;
         int falsePositives = 0;
         var random = new Random();
 
         int effectiveLimit = 0;
         double observedFpRate = 0.0;
 
+        // ✅ Hard limit on insertions (prevents infinite loops)
+        int maxInsertions = expectedElements * 2;
+
+        // ✅ Start time tracking (ensures timeout)
+        var startTime = DateTime.UtcNow;
+        TimeSpan maxDuration = TimeSpan.FromMinutes(5); // Ensure test never runs over 5 minutes
+
         // Insert elements and track false positives
-        for (int inserted = 0; inserted < expectedElements * 2; inserted++)
+        for (int inserted = 0; inserted < maxInsertions; inserted++)
         {
+            if (DateTime.UtcNow - startTime > maxDuration)
+            {
+                Console.WriteLine("\n⚠️ Timeout reached. Stopping test.");
+                break;
+            }
+
             string testValue = $"test_{Guid.NewGuid()}";
             testFilter.Add(testValue);
 
-            // Run false positive check every 10 insertions
-            if (inserted % 10 == 0)
+            // Run false positive check every 100 insertions for large filters
+            if (inserted % (expectedElements > 5000 ? 100 : 10) == 0)
             {
                 falsePositives = 0;
 
@@ -396,40 +411,23 @@ public static class REPLConsole
                     break;
                 }
             }
+
+            // ✅ Stop if max insertions reached (Failsafe)
+            if (inserted >= maxInsertions - 1)
+            {
+                effectiveLimit = inserted;
+                Console.WriteLine("\n⚠️ Max insertions reached. Stopping test.");
+                break;
+            }
         }
 
         // Print results
-        Console.WriteLine($"\n\tFalse Positives: {falsePositives.ToString("N0")} out of {totalLookups.ToString("N0")} Lookups");
-        Console.WriteLine($"\tInserted Items: {testFilter.GetCurrentFilterSize().ToString("N0")}");
-        Console.WriteLine($"\tExpected FP Rate: {expectedFpRate * 100:F1}%, Observed FP Rate: {observedFpRate * 100:F1}%");
+        Console.WriteLine("\n📊 Results:");
+        Console.WriteLine($"False Positives: {falsePositives:N0} out of {totalLookups:N0} Lookups");
+        Console.WriteLine($"Inserted Items: {testFilter.GetCurrentFilterSize():N0}");
+        Console.WriteLine($"Expected FP Rate: {expectedFpRate * 100:F1}%, Observed FP Rate: {observedFpRate * 100:F1}%");
         Console.WriteLine("\n✅ Maximum number of items before exceeding expected false positive rate: " +
-                          $"{Math.Max(1, effectiveLimit).ToString("N0")} elements");
-
-    }
-
-    private static int CountSetBits(StandardBloomFilter<string> filter)
-    {
-        byte[] bitArray = filter.GetRawBitArray(); // Method to return `_bitArray`
-        int count = 0;
-
-        foreach (byte b in bitArray)
-        {
-            count += CountBitsInByte(b);
-        }
-
-        return count;
-    }
-
-    // Efficiently counts '1' bits in a byte
-    private static int CountBitsInByte(byte b)
-    {
-        int count = 0;
-        while (b > 0)
-        {
-            count += b & 1;
-            b >>= 1;
-        }
-        return count;
+                          $"{Math.Max(1, effectiveLimit):N0} elements");
     }
 
     private static void RunMurmur3(string input)
