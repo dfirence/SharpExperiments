@@ -90,8 +90,12 @@ public static class Murmur3
         {
             return s_default_invalid;
         }
-        byte[] bytes = Encoding.UTF8.GetBytes(value);
-        return CreateHash(bytes, seed);
+
+        int byteCount = Encoding.UTF8.GetByteCount(value);
+        Span<byte> buffer = byteCount <= 128 ? stackalloc byte[byteCount] : new byte[byteCount];
+        Encoding.UTF8.GetBytes(value, buffer);
+
+        return CreateHash(buffer, seed);
     }
 
     /// <summary>

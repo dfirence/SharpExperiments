@@ -146,41 +146,4 @@ public class Hashing_Murmur3_Benchmarks
     {
         _ = Murmur3.CreateHash(_asciiBytes);
     }
-    
-    /// <summary>
-    /// Benchmarks Murmur3 hashing on a UTF-16 (Unicode) encoded string.
-    /// </summary>
-    [Benchmark]
-    public void Murmur3_V2_UNICODE_CreateHash()
-    {
-        _ = Murmur3_V2.CreateHash(_unicodeBytes);
-    }
-
-    /// <summary>
-    /// Benchmarks Murmur3_V2 hashing on a UTF-32 encoded string.
-    /// </summary>
-    [Benchmark]
-    public void Murmur3_V2_UTF32_CreateHash()
-    {
-        _ = Murmur3_V2.CreateHash(_utf32Bytes);
-    }
-
-    /// <summary>
-    /// Benchmarks Murmur3_V2 hashing on a UTF-8 encoded string.
-    /// </summary>
-    [Benchmark]
-    public void Murmur3_V2_UTF8_CreateHash()
-    {
-        _ = Murmur3_V2.CreateHash(_utf8Bytes);
-    }
-
-    /// <summary>
-    /// Benchmarks Murmur3_V2 hashing on an ASCII encoded string.
-    /// Note: ASCII only supports basic English characters (no special Unicode symbols).
-    /// </summary>
-    [Benchmark]
-    public void Murmur3_V2_ASCII_CreateHash()
-    {
-        _ = Murmur3_V2.CreateHash(_asciiBytes);
-    }
 }
