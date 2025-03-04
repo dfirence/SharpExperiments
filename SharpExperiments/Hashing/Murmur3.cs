@@ -125,7 +125,7 @@ public static class Murmur3
             // Using `BinaryPrimiyives.ReadUint64LittleEndian` avoids unnecessary memory allocations, improving performance.  
             ulong k1 = BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(i));      // First 64-bit word (low 8 bytes)
             ulong k2 = BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(i + 8));  // Second 64-bit word (high 8 bytes)
-            
+
             // Mix K1 into h1
             // Each 64-bit word undergoes a transformation using bitwise shifts and multiplications.
             // These operations ensure that small changes in input propagate throughout the hash.
@@ -317,7 +317,9 @@ public static class Murmur3
                 // Combine `mixedH1` and `mixedH2` to generate the final hash value for this iteration
                 // - XOR is used to merge both mixed values, ensuring that **entropy from both inputs influences the result**.
                 // - The result is **cast to a signed 64-bit integer (`long`)**, which is common in hash-based data structures.
-                hashValues[i] = (long)(mixedH1 ^ mixedH2);
+                // - Applying bitwise AND with 0x7FFFFFFFFFFFFFFF ensures the highest bit (sign bit) is always 0, making the
+                //   number non-negative.
+                hashValues[i] = (long)((mixedH1 ^ mixedH2) & 0x7FFFFFFFFFFFFFFF);
             }
         }
         finally
