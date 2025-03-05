@@ -121,8 +121,8 @@ public class StandardBloomFilter<T>
         
             Bit Array Size  (m): {_size} bits ({_byteSize} bytes)
             Elements        (n): {_expectedElements}
-            Functions       (k): {_hashCount}
-            FP Rate         (p): {falsePositiveRate}
+            Hash Functions  (k): {_hashCount}
+            FP Rate         (p): {falsePositiveRate} or {falsePositive * 100:F1}%
         ================================================";
     }
 
@@ -150,9 +150,9 @@ public class StandardBloomFilter<T>
     public void Add(T item)
     {
         Span<long> insertHashes = stackalloc long[_hashCount];
-        //GetHashes(item, insertHashes);
         // Track if at least one new bit is set
         bool isNewElement = false;
+        
         Murmur3.CreateHashes(item, insertHashes);
 
         foreach (var hash in insertHashes)
@@ -161,20 +161,15 @@ public class StandardBloomFilter<T>
             int byteIndex = bitIndex >> 3;
             int bitMask = 1 << (bitIndex & 7);
 
-            // Check if this bit was already set
-            bool wasAlreadySet = (_bitArray[byteIndex] & bitMask) != 0;
-
-            // Set the bit
-            _bitArray[byteIndex] |= (byte)bitMask;
-
-            // If the bit was not set before, mark this item as "new"
-            if (!wasAlreadySet)
+            // Check if this bit was not already set
+            if ((_bitArray[byteIndex] & bitMask) == 0)
             {
+                // Set the bit
+                _bitArray[byteIndex] |= (byte)bitMask;
                 isNewElement = true;
             }
         }
 
-        // If at least one new bit was set, count this as a new inserted element
         if (isNewElement)
         {
             _insertedElements++;
