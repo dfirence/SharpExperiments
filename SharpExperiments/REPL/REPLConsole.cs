@@ -375,7 +375,7 @@ public static class REPLConsole
             📌 Simulated Filter Capacity    {expectedElements:N0}
             🔹 Expected FP Rate             {expectedFpRate * 100:F1}%
             
-            ========================================================================
+            ========================================================================");
         
         // Move stackalloc OUTSIDE loop
         Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
