@@ -21,7 +21,7 @@ public static class KeyHandler
         }
         else if (key.Key == ConsoleKey.C && key.Modifiers.HasFlag(ConsoleModifiers.Control))
         {
-            Console.WriteLine(helpString);
+            Console.WriteLine(c_helpString);
             var confirm = Console.ReadKey(true);
             
             if (confirm.Key == ConsoleKey.C)
