@@ -6,8 +6,10 @@ using System.Collections.Generic;
 public static class KeyHandler
 {
     private const string c_helpString = "\nPress CTRL+C again to exit, or ENTER to continue...";
+    private const string c_eraseCharacter = "\b \b";
+    private const string c_spaceCharacter = " "; 
+    private static int _historyIndex = -1; // Tracks position command in history
     private static List<string> _commandHistory = new(); // Stores previous commands
-    private static int _historyIndex = -1; // Tracks position in history
     public static Func<string>? GetPromptDelegate { get; set; }
 
 
@@ -16,12 +18,12 @@ public static class KeyHandler
         if (key.Key == ConsoleKey.L && key.Modifiers.HasFlag(ConsoleModifiers.Control))
         {
             Console.Clear();
-            Console.WriteLine("Screen cleared.");
         }
         else if (key.Key == ConsoleKey.C && key.Modifiers.HasFlag(ConsoleModifiers.Control))
         {
-            Console.WriteLine("\nPress CTRL+C again to exit, or ENTER to continue...");
+            Console.WriteLine(helpString);
             var confirm = Console.ReadKey(true);
+            
             if (confirm.Key == ConsoleKey.C)
             {
                 Environment.Exit(0);
@@ -73,11 +75,12 @@ public static class KeyHandler
             cursorPosition--;
             inputBuffer.RemoveAt(cursorPosition);
 
-            Console.Write("\b \b"); // Erase character
+            Console.Write(c_eraseCharacter);
 
             // Redraw remaining text
             string updatedText = new string(inputBuffer.ToArray()).Substring(cursorPosition);
-            Console.Write(updatedText + " ");
+            
+            Console.Write(updatedText + c_spaceCharacter);
             Console.SetCursorPosition(Console.CursorLeft - (updatedText.Length + 1), Console.CursorTop);
         }
         else if (!char.IsControl(key.KeyChar))
