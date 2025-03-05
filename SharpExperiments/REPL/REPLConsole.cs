@@ -376,7 +376,7 @@ public static class REPLConsole
         Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
 
         // Precompute hash values for lookups
-        string[] precomputedHashes = new long[totalLookups];
+        string[] precomputedHashes = new string[totalLookups];
         for (int i = 0; i < totalLookups; i++)
         {
             precomputedHashes[i] = Murmur3.GetStringHash($"lookup_{i}");
