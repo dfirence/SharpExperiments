@@ -190,13 +190,12 @@ public static class REPLConsole
             create <n> <p>    - Create a new Bloom Filter (expected elements & FP rate)
             add <value>       - Add a value to the Bloom Filter
             maybe <value>     - Check if a value **might** be in the Bloom Filter
-            hash <value>      - Show hash values for a given value
+            hash <value>      - Show hashes for a given value
             show array        - Display the Bloom Filter bit array
             show config       - Show the Bloom Filter configuration
             count             - Show number of inserted elements
             back              - Exit the Bloom Filter module
-            ?                 - Show this help menu
-        ");
+            ?                 - Show this help menu");
         }
         else if (s_currentModule == "hashing")
         {
@@ -204,8 +203,7 @@ public static class REPLConsole
             Console.WriteLine($@"
             murmur3 <text> [--seed <number>] - Compute a Murmur3 hash
             back                             - Exit the Hashing module
-            ?                                - Show this help menu
-        ");
+            ?                                - Show this help menu");
         }
         else
         {
@@ -215,8 +213,7 @@ public static class REPLConsole
             clear           - Clear the screen (or use CTRL+L, or use cls)
             exit            - Exit the REPL
             use <module>    - Enter a specific module (example, `use hashing`)
-            ?               - Show this help menu
-        ");
+            ?               - Show this help menu");
         }
     }
 
@@ -353,9 +350,15 @@ public static class REPLConsole
 
         var testFilter = new StandardBloomFilter<string>(expectedElements, expectedFpRate);
 
-        Console.WriteLine("\n🔵 Running isolated false positive analysis...");
-        Console.WriteLine($"📌 Simulated Filter Capacity: {expectedElements:N0}");
-        Console.WriteLine($"🔹 Expected FP Rate: {expectedFpRate * 100:F1}%");
+        Console.WriteLine($@"
+        
+        🔵 Running isolated false positive analysis
+        =====================================================
+        
+        📌 Simulated Filter Capacity    {expectedElements:N0}
+        🔹 Expected FP Rate             {expectedFpRate * 100:F1}%
+        
+        =====================================================");
 
         // Move stackalloc OUTSIDE loop to avoid stack overflow
         Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
@@ -368,10 +371,10 @@ public static class REPLConsole
         int effectiveLimit = 0;
         double observedFpRate = 0.0;
 
-        // ✅ Hard limit on insertions (prevents infinite loops)
+        // Hard limit on insertions (prevents infinite loops)
         int maxInsertions = expectedElements * 2;
 
-        // ✅ Start time tracking (ensures timeout)
+        // Start time tracking (ensures timeout)
         var startTime = DateTime.UtcNow;
         TimeSpan maxDuration = TimeSpan.FromMinutes(5); // Ensure test never runs over 5 minutes
 
@@ -412,7 +415,7 @@ public static class REPLConsole
                 }
             }
 
-            // ✅ Stop if max insertions reached (Failsafe)
+            // Stop if max insertions reached (Failsafe)
             if (inserted >= maxInsertions - 1)
             {
                 effectiveLimit = inserted;
@@ -422,12 +425,19 @@ public static class REPLConsole
         }
 
         // Print results
-        Console.WriteLine("\n📊 Results:");
-        Console.WriteLine($"False Positives: {falsePositives:N0} out of {totalLookups:N0} Lookups");
-        Console.WriteLine($"Inserted Items: {testFilter.GetCurrentFilterSize():N0}");
-        Console.WriteLine($"Expected FP Rate: {expectedFpRate * 100:F1}%, Observed FP Rate: {observedFpRate * 100:F1}%");
-        Console.WriteLine("\n✅ Maximum number of items before exceeding expected false positive rate: " +
-                          $"{Math.Max(1, effectiveLimit):N0} elements");
+        Console.WriteLine($@"
+        
+        📊 Results
+        ========================================================================
+        
+        False Positives     {falsePositives:N0} out of {totalLookups:N0} Lookups
+        Inserted Items      {testFilter.GetCurrentFilterSize():N0}
+        Expected FP Rate    {expectedFpRate * 100:F1}%
+        Observed FP Rate    {observedFpRate * 100:F1}%
+        
+        ========================================================================
+        
+        {Math.Max(1, effectiveLimit):N0} Maximum items before exceeding expected false positive rate");
     }
 
     private static void RunMurmur3(string input)
