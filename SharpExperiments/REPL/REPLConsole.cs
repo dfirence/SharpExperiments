@@ -261,9 +261,14 @@ public static class REPLConsole
             ColorPalette.Error("Usage: bloom add <item>");
             return;
         }
-
+        // Use Stopwatch.GetTimestamp() for nanosecond precision
+        long startTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
         bloomFilter.Add(parameters.Trim());
-        ColorPalette.Success($"\nAdded '{parameters}' to Bloom Filter.");
+        // Use Stopwatch.GetTimestamp() for nanosecond precision
+        long endTimeStamp = System.Diagnostics.Stopwatch.GetTimestamp();
+        // Convert elapsed time to nanoseconds
+        double elapsedNanoseconds = (endTimestamp - startTimestamp) * (1_000_000_000.0 / System.Diagnostics.Stopwatch.Frequency);
+        ColorPalette.Success($"\nAdded '{parameters}' to Bloom Filter: {elapsedNanoseconds:F2} ns");
     }
 
     private static void CheckMembership(string parameters)
@@ -365,12 +370,12 @@ public static class REPLConsole
         Console.WriteLine($@"
             
             🔵 Running optimized false positive analysis
-            =====================================================
+            ========================================================================
             
             📌 Simulated Filter Capacity    {expectedElements:N0}
             🔹 Expected FP Rate             {expectedFpRate * 100:F1}%
             
-            =====================================================");
+            ========================================================================
         
         // Move stackalloc OUTSIDE loop
         Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
@@ -446,6 +451,7 @@ public static class REPLConsole
             ========================================================================");
     }
 
+    
     private static void RunMurmur3(string input)
     {
         if (string.IsNullOrEmpty(input))
@@ -458,7 +464,16 @@ public static class REPLConsole
         string text = parts[0].Trim();
         uint seed = parts.Length > 1 && uint.TryParse(parts[1], out uint s) ? s : 0; // Default seed = 0
 
+        // Use Stopwatch.GetTimestamp() for nanosecond precision
+        long startTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
+
         (ulong h1, ulong h2) = Murmur3.HashItem(text, seed);
+
+        long endTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
+
+        // Convert elapsed time to nanoseconds
+        double elapsedNanoseconds = (endTimestamp - startTimestamp) * (1_000_000_000.0 / System.Diagnostics.Stopwatch.Frequency);
+
         if (h1 == uint.MinValue && h2 == uint.MinValue)
         {
             ColorPalette.Error($"Error, to fix later| Default Value From Null Return");
@@ -467,11 +482,12 @@ public static class REPLConsole
 
         ColorPalette.Info($"\nMurmur3 Hash of '{text}':");
         Console.WriteLine($@"
-        Final Hash (Hex from `h1`,`h2`) :   {h1:X16}{h2:X16}
-        Final Hash (ulong XOR)          :   {h1 ^ h2}
-        h1                              :   {h1}
-        h2                              :   {h2}
-        Seed                            :   {seed}
-        ");
+            h1                              :   {h1}
+            h2                              :   {h2}
+            Seed                            :   {seed}
+            Input Bytes Count               :   {System.Text.Encoding.UTF8.GetByteCount(text)}
+            Execution Time (ns)             :   {elapsedNanoseconds:F2} ns
+            Final Hash (ulong XOR)          :   {h1 ^ h2}
+            Final Hash (Hex from `h1`,`h2`) :   {h1:X16}{h2:X16}");
     }
 }
