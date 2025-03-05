@@ -441,7 +441,7 @@ public static class REPLConsole
             Expected FP Rate    {expectedFpRate * 100:F1}%
             Observed FP Rate    {observedFpRate * 100:F1}%
             
-            🔥 Math.Max(1, effectiveLimit):N0} Max items before exceeding expected false positive rate
+            🔥 {Math.Max(1, effectiveLimit):N0} Max items before exceeding expected false positive rate
             
             ========================================================================");
     }
