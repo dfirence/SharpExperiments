@@ -122,7 +122,7 @@ public class StandardBloomFilter<T>
             Bit Array Size  (m): {_size} bits ({_byteSize} bytes)
             Elements        (n): {_expectedElements}
             Hash Functions  (k): {_hashCount}
-            FP Rate         (p): {falsePositiveRate} or {falsePositive * 100:F1}%
+            FP Rate         (p): {falsePositiveRate} or {falsePositiveRate * 100:F1}%
         ================================================";
     }
 
