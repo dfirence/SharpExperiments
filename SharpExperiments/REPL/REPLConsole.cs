@@ -265,7 +265,7 @@ public static class REPLConsole
         long startTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
         bloomFilter.Add(parameters.Trim());
         // Use Stopwatch.GetTimestamp() for nanosecond precision
-        long endTimeStamp = System.Diagnostics.Stopwatch.GetTimestamp();
+        long endTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
         // Convert elapsed time to nanoseconds
         double elapsedNanoseconds = (endTimestamp - startTimestamp) * (1_000_000_000.0 / System.Diagnostics.Stopwatch.Frequency);
         ColorPalette.Success($"\nAdded '{parameters}' to Bloom Filter: {elapsedNanoseconds:F2} ns");
