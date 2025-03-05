@@ -261,14 +261,10 @@ public static class REPLConsole
             ColorPalette.Error("Usage: bloom add <item>");
             return;
         }
-        // Use Stopwatch.GetTimestamp() for nanosecond precision
+        
         long startTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
         bloomFilter.Add(parameters.Trim());
-        // Use Stopwatch.GetTimestamp() for nanosecond precision
-        long endTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
-        // Convert elapsed time to nanoseconds
-        double elapsedNanoseconds = (endTimestamp - startTimestamp) * (1_000_000_000.0 / System.Diagnostics.Stopwatch.Frequency);
-        ColorPalette.Success($"\nAdded '{parameters}' to Bloom Filter: {elapsedNanoseconds:F2} ns");
+        ColorPalette.Success($"\nAdded '{parameters}' to Bloom Filter");
     }
 
     private static void CheckMembership(string parameters)
@@ -464,15 +460,7 @@ public static class REPLConsole
         string text = parts[0].Trim();
         uint seed = parts.Length > 1 && uint.TryParse(parts[1], out uint s) ? s : 0; // Default seed = 0
 
-        // Use Stopwatch.GetTimestamp() for nanosecond precision
-        long startTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
-
         (ulong h1, ulong h2) = Murmur3.HashItem(text, seed);
-
-        long endTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
-
-        // Convert elapsed time to nanoseconds
-        double elapsedNanoseconds = (endTimestamp - startTimestamp) * (1_000_000_000.0 / System.Diagnostics.Stopwatch.Frequency);
 
         if (h1 == uint.MinValue && h2 == uint.MinValue)
         {
@@ -486,7 +474,6 @@ public static class REPLConsole
             h2                              :   {h2}
             Seed                            :   {seed}
             Input Bytes Count               :   {System.Text.Encoding.UTF8.GetByteCount(text)}
-            Execution Time (ns)             :   {elapsedNanoseconds:F2} ns
             Final Hash (ulong XOR)          :   {h1 ^ h2}
             Final Hash (Hex from `h1`,`h2`) :   {h1:X16}{h2:X16}");
     }
