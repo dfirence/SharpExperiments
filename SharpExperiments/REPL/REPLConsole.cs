@@ -347,36 +347,46 @@ public static class REPLConsole
 
         int expectedElements = bloomFilter.GetAllocatedFilterSize();
         double expectedFpRate = bloomFilter.GetFalsePositiveRate();
-
+        double observedFpRate = 0.0;
+        
         var testFilter = new StandardBloomFilter<string>(expectedElements, expectedFpRate);
 
-        Console.WriteLine($@"
-        
-        🔵 Running isolated false positive analysis
-        =====================================================
-        
-        📌 Simulated Filter Capacity    {expectedElements:N0}
-        🔹 Expected FP Rate             {expectedFpRate * 100:F1}%
-        
-        =====================================================");
+        // Reduce number of lookups for large filters
+        int totalLookups = expectedElements > 5000 ? 250_000 : 1_000_000;
 
-        // Move stackalloc OUTSIDE loop to avoid stack overflow
+        // Adjust FP check frequency dynamically
+        int checkInterval = Math.Max(10, expectedElements / 50);
+        
+        // Limit insertions (prevents excessive runtime)
+        int maxInsertions = (int)(expectedElements * 1.5);
+        int effectiveLimit = 0;
+        int falsePositives = 0;
+        
+        Console.WriteLine($@"
+            
+            🔵 Running optimized false positive analysis
+            =====================================================
+            
+            📌 Simulated Filter Capacity    {expectedElements:N0}
+            🔹 Expected FP Rate             {expectedFpRate * 100:F1}%
+            
+            =====================================================");
+        
+        // Move stackalloc OUTSIDE loop
         Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
 
-        // Adjust lookup count for large filters
-        int totalLookups = expectedElements > 5000 ? 500_000 : 1_000_000;
-        int falsePositives = 0;
-        var random = new Random();
-
-        int effectiveLimit = 0;
-        double observedFpRate = 0.0;
-
-        // Hard limit on insertions (prevents infinite loops)
-        int maxInsertions = expectedElements * 2;
+        // Precompute hash values for lookups
+        long[] precomputedHashes = new long[totalLookups];
+        for (int i = 0; i < totalLookups; i++)
+        {
+            precomputedHashes[i] = Murmur3.GetStringHash($"lookup_{i}");
+        }
 
         // Start time tracking (ensures timeout)
         var startTime = DateTime.UtcNow;
-        TimeSpan maxDuration = TimeSpan.FromMinutes(5); // Ensure test never runs over 5 minutes
+        
+        // Prevent excessive runtime
+        TimeSpan maxDuration = TimeSpan.FromMinutes(3);
 
         // Insert elements and track false positives
         for (int inserted = 0; inserted < maxInsertions; inserted++)
@@ -390,17 +400,14 @@ public static class REPLConsole
             string testValue = $"test_{Guid.NewGuid()}";
             testFilter.Add(testValue);
 
-            // Run false positive check every 100 insertions for large filters
-            if (inserted % (expectedElements > 5000 ? 100 : 10) == 0)
+            // Run FP check at dynamic intervals using precomputed hashes
+            if (inserted % checkInterval == 0)
             {
                 falsePositives = 0;
 
                 for (int i = 0; i < totalLookups; i++)
                 {
-                    string invalid = $"random_{i}";
-                    Murmur3.CreateHashes(invalid, lookupHashes);
-
-                    if (testFilter.MightContain(invalid))
+                    if (testFilter.MightContain(precomputedHashes[i]))
                     {
                         falsePositives++;
                     }
@@ -415,7 +422,7 @@ public static class REPLConsole
                 }
             }
 
-            // Stop if max insertions reached (Failsafe)
+            // Stop at max insertions
             if (inserted >= maxInsertions - 1)
             {
                 effectiveLimit = inserted;
@@ -424,20 +431,19 @@ public static class REPLConsole
             }
         }
 
-        // Print results
         Console.WriteLine($@"
-        
-        📊 Results
-        ========================================================================
-        
-        False Positives     {falsePositives:N0} out of {totalLookups:N0} Lookups
-        Inserted Items      {testFilter.GetCurrentFilterSize():N0}
-        Expected FP Rate    {expectedFpRate * 100:F1}%
-        Observed FP Rate    {observedFpRate * 100:F1}%
-        
-        ========================================================================
-        
-        {Math.Max(1, effectiveLimit):N0} Maximum items before exceeding expected false positive rate");
+            
+            📊 Optimized Results
+            ========================================================================
+            
+            False Positives     {falsePositives:N0} out of {totalLookups:N0} Lookups
+            Inserted Items      {testFilter.GetCurrentFilterSize():N0}
+            Expected FP Rate    {expectedFpRate * 100:F1}%
+            Observed FP Rate    {observedFpRate * 100:F1}%
+            
+            🔥 Math.Max(1, effectiveLimit):N0} Max items before exceeding expected false positive rate
+            
+            ========================================================================");
     }
 
     private static void RunMurmur3(string input)
