@@ -106,6 +106,7 @@ public static class Murmur3
     /// <param name="data">The input byte array to hash.</param>
     /// <param name="seed">A 32-bit seed value (useful for independent hash computations).</param>
     /// <returns>A tuple containing two **64-bit hash values (h1, h2)**, forming a **128-bit Murmur hash**.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static (ulong, ulong) CreateHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         // MurmurHash3 constants for mixing
