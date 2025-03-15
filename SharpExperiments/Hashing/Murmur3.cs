@@ -1,8 +1,8 @@
 namespace SharpExperiments.Hashing;
-
 using System;
 using System.Buffers;
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 /// <summary>
@@ -31,7 +31,7 @@ public static class Murmur3
     /// <param name="seed">An optional seed value for the hash function. Defaults to 0.</param>
     /// <returns>
     /// A 64-bit hash value derived by XOR-ing the two 64-bit components of the 128-bit Murmur3 hash.
-    /// If the input is null or empty, or if the hash computation results in an invalid value, 
+    /// If the input is null or empty, or if the hash computation results in an invalid value,
     /// the method returns the default invalid hash (`ulong.MinValue`).
     /// </returns>
     public static ulong GetXorHash(string value, uint seed = 0)
@@ -69,12 +69,9 @@ public static class Murmur3
 
         (ulong h1, ulong h2) = HashItem(value, seed);
 
-        if (h1 == s_default_invalid.h1 && h2 == s_default_invalid.h2)
-        {
-            return c_null_murmur3_string;
-        }
-
-        return $"{h1:X16}{h2:X16}";
+        return (h1 == s_default_invalid.h1 && h2 == s_default_invalid.h2)
+            ? c_null_murmur3_string
+            : $"{h1:X16}{h2:X16}";
     }
 
     /// <summary>
@@ -123,7 +120,7 @@ public static class Murmur3
         while (length >= 16)
         {
             // Read two 64-bit words from the input data
-            // Using `BinaryPrimiyives.ReadUint64LittleEndian` avoids unnecessary memory allocations, improving performance.  
+            // Using `BinaryPrimiyives.ReadUint64LittleEndian` avoids unnecessary memory allocations, improving performance.
             ulong k1 = BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(i));      // First 64-bit word (low 8 bytes)
             ulong k2 = BinaryPrimitives.ReadUInt64LittleEndian(data.Slice(i + 8));  // Second 64-bit word (high 8 bytes)
 
@@ -213,7 +210,7 @@ public static class Murmur3
         }
 
         // Finalization - Ensuring Strong Avalanche Properties
-        // The finalization step in MurmurHash3 ensures that even small input variations 
+        // The finalization step in MurmurHash3 ensures that even small input variations
         // produce drastically different hash outputs (the "avalanche effect").
         //
         // Step 1: XOR the length into both hash values (`h1` and `h2`)
@@ -238,7 +235,7 @@ public static class Murmur3
 
         // Step 4: Final mixing of `h1` and `h2`
         // - The two hash halves are **cross-mixed** one final time by summing them again.
-        // - This ensures that the final 128-bit hash is **fully diffused**, meaning small input changes 
+        // - This ensures that the final 128-bit hash is **fully diffused**, meaning small input changes
         //   cause widespread bit changes in both 64-bit outputs.
         h1 += h2;
         h2 += h1;

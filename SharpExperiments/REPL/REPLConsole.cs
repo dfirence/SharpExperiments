@@ -8,11 +8,10 @@ public static class REPLConsole
 {
     private static bool s_isRunning = true;
     private static string s_currentModule = string.Empty;
-
-    private static StandardBloomFilter<string>? bloomFilter = null; // Maintain Bloom Filter instance
-
+    private static StandardBloomFilter<string>? s_bloomFilter = null; // Maintain Bloom Filter instance
     private const string c_promptName = "sharpExperiments";
     private const string c_unknownCommand = "Unknown command. Type 'help' for a list of commands.";
+
     public static void Start()
     {
         Console.Clear();
@@ -147,11 +146,11 @@ public static class REPLConsole
             case "show":
                 if (args.Equals("array", StringComparison.OrdinalIgnoreCase))
                 {
-                    bloomFilter?.ShowArrayGrid();
+                    s_bloomFilter?.ShowArrayGrid();
                 }
                 else if (args.Equals("config", StringComparison.OrdinalIgnoreCase))
                 {
-                    bloomFilter?.ShowConfiguration();
+                    s_bloomFilter?.ShowConfiguration();
                 }
                 else
                 {
@@ -250,7 +249,7 @@ public static class REPLConsole
 
     private static void AddItemToBloom(string parameters)
     {
-        if (bloomFilter == null)
+        if (s_bloomFilter == null)
         {
             ColorPalette.Error("Error: No Bloom filter created. Use 'bloom create <n> <p>' first.");
             return;
@@ -261,15 +260,15 @@ public static class REPLConsole
             ColorPalette.Error("Usage: bloom add <item>");
             return;
         }
-        
+
         long startTimestamp = System.Diagnostics.Stopwatch.GetTimestamp();
-        bloomFilter.Add(parameters.Trim());
+        s_bloomFilter.Add(parameters.Trim());
         ColorPalette.Success($"\nAdded '{parameters}' to Bloom Filter");
     }
 
     private static void CheckMembership(string parameters)
     {
-        if (bloomFilter == null)
+        if (s_bloomFilter == null)
         {
             ColorPalette.Error("Error: No Bloom filter created. Use 'bloom create <n> <p>' first.");
             return;
@@ -281,7 +280,7 @@ public static class REPLConsole
             return;
         }
 
-        bool result = bloomFilter.MightContain(parameters.Trim());
+        bool result = s_bloomFilter.MightContain(parameters.Trim());
 
         ColorPalette.Info($"\n🔎 Checking membership for \"{parameters}\":");
         Console.WriteLine(result ? $"✅ {parameters} is **possibly present** in the filter." : $"❌ {parameters} is **definitely NOT present**.");
@@ -296,25 +295,25 @@ public static class REPLConsole
             return;
         }
 
-        bloomFilter = new StandardBloomFilter<string>(n, p);
+        s_bloomFilter = new StandardBloomFilter<string>(n, p);
         ColorPalette.Success($"\nCreated Bloom Filter with n={n}, p={p}");
-        bloomFilter.ShowConfiguration();
+        s_bloomFilter.ShowConfiguration();
     }
 
     private static void ShowInsertedCount()
     {
-        if (bloomFilter == null)
+        if (s_bloomFilter == null)
         {
             ColorPalette.Error("Error: No Bloom filter created. Use 'bloom create <n> <p>' first.");
             return;
         }
 
-        ColorPalette.Info($"\nBloom Filter Items: {bloomFilter.GetCurrentFilterSize()}");
+        ColorPalette.Info($"\nBloom Filter Items: {s_bloomFilter.GetCurrentFilterSize()}");
     }
 
     private static void ShowHash(string parameters)
     {
-        if (bloomFilter == null)
+        if (s_bloomFilter == null)
         {
             ColorPalette.Error("Error: No Bloom filter created. Use 'bloom create <n> <p>' first.");
             return;
@@ -326,7 +325,7 @@ public static class REPLConsole
             return;
         }
 
-        Span<long> hashValues = stackalloc long[bloomFilter.GetCurrentHashCount()];
+        Span<long> hashValues = stackalloc long[s_bloomFilter.GetCurrentHashCount()];
         Murmur3.CreateHashes(parameters.Trim(), hashValues);
 
         Console.WriteLine("\nHash values for \"" + parameters + "\":");
@@ -340,16 +339,16 @@ public static class REPLConsole
 
     private static void RunFalsePositiveTest()
     {
-        if (bloomFilter == null)
+        if (s_bloomFilter == null)
         {
             ColorPalette.Error("Error: No Bloom filter created. Use 'bloom create <n> <p>' first.");
             return;
         }
 
-        int expectedElements = bloomFilter.GetAllocatedFilterSize();
-        double expectedFpRate = bloomFilter.GetFalsePositiveRate();
+        int expectedElements = s_bloomFilter.GetAllocatedFilterSize();
+        double expectedFpRate = s_bloomFilter.GetFalsePositiveRate();
         double observedFpRate = 0.0;
-        
+
         var testFilter = new StandardBloomFilter<string>(expectedElements, expectedFpRate);
 
         // Reduce number of lookups for large filters
@@ -357,22 +356,22 @@ public static class REPLConsole
 
         // Adjust FP check frequency dynamically
         int checkInterval = Math.Max(10, expectedElements / 50);
-        
+
         // Limit insertions (prevents excessive runtime)
         int maxInsertions = (int)(expectedElements * 1.5);
         int effectiveLimit = 0;
         int falsePositives = 0;
-        
+
         Console.WriteLine($@"
-            
+
             🔵 Running optimized false positive analysis
             ========================================================================
-            
+
             📌 Simulated Filter Capacity    {expectedElements:N0}
             🔹 Expected FP Rate             {expectedFpRate * 100:F1}%
-            
+
             ========================================================================");
-        
+
         // Move stackalloc OUTSIDE loop
         Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
 
@@ -385,7 +384,7 @@ public static class REPLConsole
 
         // Start time tracking (ensures timeout)
         var startTime = DateTime.UtcNow;
-        
+
         // Prevent excessive runtime
         TimeSpan maxDuration = TimeSpan.FromMinutes(3);
 
@@ -433,21 +432,21 @@ public static class REPLConsole
         }
 
         Console.WriteLine($@"
-            
+
             📊 Optimized Results
             ========================================================================
-            
+
             False Positives     {falsePositives:N0} out of {totalLookups:N0} Lookups
             Inserted Items      {testFilter.GetCurrentFilterSize():N0}
             Expected FP Rate    {expectedFpRate * 100:F1}%
             Observed FP Rate    {observedFpRate * 100:F1}%
-            
+
             🔥 {Math.Max(1, effectiveLimit):N0} Max items before exceeding expected false positive rate
-            
+
             ========================================================================");
     }
 
-    
+
     private static void RunMurmur3(string input)
     {
         if (string.IsNullOrEmpty(input))
