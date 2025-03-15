@@ -20,8 +20,8 @@ using System.Text;
 /// </summary>
 public static class Murmur3
 {
-    private static (ulong h1, ulong h2) s_default_invalid = (ulong.MinValue, ulong.MinValue);
-    private static string c_null_murmur3_string = "00000000000000000000000000000000";
+    private static (ulong h1, ulong h2) s_defaultHashPairs = (ulong.MinValue, ulong.MinValue);
+    private const string c_nullMurmurString = "00000000000000000000000000000000";
 
     /// <summary>
     /// Computes a 64-bit hash from the 128-bit Murmur3 hash of a given string
@@ -38,17 +38,14 @@ public static class Murmur3
     {
         if (string.IsNullOrEmpty(value))
         {
-            return s_default_invalid.h1;
+            return s_defaultHashPairs.h1;
         }
 
         (ulong h1, ulong h2) = HashItem(value, seed);
 
-        if (h1 == s_default_invalid.h1 && h2 == s_default_invalid.h2)
-        {
-            return s_default_invalid.h1;
-        }
-
-        return h1 ^ h2;
+        return (h1 == s_defaultHashPairs.h1 && h2 == s_defaultHashPairs.h2)
+            ? s_defaultHashPairs.h1
+            : h1 ^ h2;
     }
 
     /// <summary>
@@ -64,13 +61,13 @@ public static class Murmur3
     {
         if (string.IsNullOrEmpty(value))
         {
-            return c_null_murmur3_string;
+            return c_nullMurmurString;
         }
 
         (ulong h1, ulong h2) = HashItem(value, seed);
 
-        return (h1 == s_default_invalid.h1 && h2 == s_default_invalid.h2)
-            ? c_null_murmur3_string
+        return (h1 == s_defaultHashPairs.h1 && h2 == s_defaultHashPairs.h2)
+            ? c_nullMurmurString
             : $"{h1:X16}{h2:X16}";
     }
 
@@ -85,7 +82,7 @@ public static class Murmur3
     {
         if (string.IsNullOrEmpty(value))
         {
-            return s_default_invalid;
+            return s_defaultHashPairs;
         }
 
         int byteCount = Encoding.UTF8.GetByteCount(value);

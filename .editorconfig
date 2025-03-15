@@ -12,23 +12,52 @@ trim_trailing_whitespace = true
 
 # C# specific settings
 [*.cs]
-dotnet_diagnostic.CA1303.severity = none
+
+dotnet_diagnostic.IDE0005.severity = error # Enforce alphabetical sorting of using directives
+dotnet_diagnostic.IDE0290.severity = error # Enforce namespace matches file system folder structure
+dotnet_diagnostic.CA1303.severity = warning
 dotnet_diagnostic.CS8618.severity = error
-dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
-dotnet_style_require_accessibility_modifiers = always:suggestion
-dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:suggestion
-csharp_style_var_elsewhere = false:suggestion
-csharp_style_var_when_type_is_apparent = false:suggestion
-csharp_style_var_for_built_in_types = false:suggestion
+
 csharp_indent_case_contents = true
 csharp_new_line_before_open_brace = all
+csharp_prefer_braces = true:error # Require braces for all control statements (if/else/for/while)
 csharp_preferred_modifier_order = public, protected, private, static, readonly, volatile, unsafe, async
-# Require braces for all control statements (if/else/for/while)
-csharp_prefer_braces = true:error
-# Enforce file-scoped namespaces (namespace Foo;)
-csharp_style_namespace_declarations = file_scoped:error
-# Enforce namespace matches file system folder structure
-dotnet_diagnostic.IDE0290.severity = error
-# Enforce alphabetical sorting of using directives
-dotnet_diagnostic.IDE0005.severity = error
+
+csharp_style_namespace_declarations = file_scoped:error # Enforce file-scoped namespaces (namespace Foo;)
+csharp_style_prefer_top_level_statements = false # IDE0210: Convert to top-level statements
+csharp_style_var_elsewhere = false:suggestion
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = false:suggestion
+
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:suggestion
+dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
+dotnet_style_require_accessibility_modifiers = always:suggestion
+
 dotnet_separate_import_directives = true
+
+# Naming conventions for constants and static fields
+[*.cs]
+
+# Constants should be prefixed with "c_"
+dotnet_naming_rule.constant_prefix.symbols = constant
+dotnet_naming_rule.constant_prefix.style = constant_prefix
+dotnet_naming_rule.constant_prefix.severity = error
+
+dotnet_naming_symbols.constant.applicable_kinds = field
+dotnet_naming_symbols.constant.applicable_accessibilities = public, internal, private, protected
+dotnet_naming_symbols.constant.required_modifiers = const
+
+dotnet_naming_style.constant_prefix.required_prefix = c_
+dotnet_naming_style.constant_prefix.capitalization = camel_case
+
+# Static fields should be prefixed with "s_"
+dotnet_naming_rule.static_prefix.symbols = static_field
+dotnet_naming_rule.static_prefix.style = static_prefix
+dotnet_naming_rule.static_prefix.severity = error
+
+dotnet_naming_symbols.static_field.applicable_kinds = field
+dotnet_naming_symbols.static_field.applicable_accessibilities = public, internal, private, protected
+dotnet_naming_symbols.static_field.required_modifiers = static
+
+dotnet_naming_style.static_prefix.required_prefix = s_
+dotnet_naming_style.static_prefix.capitalization = camel_case
