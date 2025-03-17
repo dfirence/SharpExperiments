@@ -20,13 +20,14 @@ public class Program
         if (args.Length < 0)
         {
             Console.WriteLine(s_helpView);
-            return
+            return;
         }
         
         if (args[0].Equals("--repl", StringComparison.OrdinalIgnoreCase))
         {
             // Start the interactive REPL mode
             REPLConsole.Start();
+            return;
         }
         
         if (args[0].Equals("--mlc", StringComparison.OrdinalIgnoreCase))
