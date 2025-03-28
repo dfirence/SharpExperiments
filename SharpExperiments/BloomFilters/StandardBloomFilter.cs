@@ -44,13 +44,13 @@ public class StandardBloomFilter<T>
     /// **Expected Number of elements inserted** into the Bloom Filter.
     /// This count is used for tracking insert operations but does not affect query performance.
     /// </summary>
-    private int _expectedElements = 0;
+    private long _expectedElements = 0;
 
     /// <summary>
     /// **Number of elements inserted** into the Bloom Filter.
     /// This count is used for tracking insert operations but does not affect query performance.
     /// </summary>
-    private int _insertedElements = 0;
+    private long _insertedElements = 0;
 
     /// <summary>
     /// **Stores the Bloom Filter configuration details** as a formatted string.
@@ -387,7 +387,7 @@ public class StandardBloomFilter<T>
     /// <param name="m">The number of bits in the Bloom Filter.</param>
     /// <param name="n">The expected number of elements to store.</param>
     /// <returns>The optimal number of hash functions (k), rounded up.</returns>
-    private int CalculateHashCount(long m, int n)
+    private int CalculateHashCount(long m, long n)
     {
         // Prevent division by zero or invalid values
         if (m <= 0 || n <= 0)
