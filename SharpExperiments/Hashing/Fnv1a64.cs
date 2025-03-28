@@ -1,13 +1,13 @@
 namespace SharpExperiments.Hashing;
 using System.Text;
 
-public class FNV1a64
+public static class FNV1a64
 {
     // Constants for 64-bit FNV-1a
     private const ulong FNV64OffsetBasis = 14695981039346656037;
     private const ulong FNV64Prime = 1099511628211;
 
-    public static ulong HashItem(string data)
+    public static ulong CreateHash(string data)
     {
         if (string.IsNullOrEmpty(data))
         {
