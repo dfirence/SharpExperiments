@@ -10,10 +10,10 @@ using SharpExperiments.Hashing;
 public class StandardBloomFilter<T>
 {
     /// <summary>
-    /// **Maximum Bloom Filter size** (800MB).
+    /// **Maximum Bloom Filter size** (1GB).
     /// Limits the **maximum number of bits** allocated to prevent excessive memory usage.
     /// </summary>
-    private const int MAX_BIT_ARRAY_SIZE = 800_000_000; // ~100MB max
+    private const int MAX_BIT_ARRAY_SIZE = 8_589_934_592; // 1 GB in bits
 
     /// <summary>
     /// **Total number of bits (m)** in the Bloom Filter.
@@ -93,26 +93,35 @@ public class StandardBloomFilter<T>
     /// </param>
     public StandardBloomFilter(int expectedElements, double falsePositiveRate = 0.01)
     {
-        // Compute the optimal bit size (m) based on the expected number of elements and target FP rate.
-        // The `+16` ensures a buffer for alignment, preventing edge-case hash collisions.
-        _size = Math.Min(CalculateBitSize(expectedElements, falsePositiveRate) + 16, MAX_BIT_ARRAY_SIZE);
+        // Compute the optimal bit size (m) based on expected elements and target FP rate.
+        int calculatedSize = CalculateBitSize(expectedElements, falsePositiveRate) + 16;
 
-        // Compute the optimal number of hash functions (k).
+        // Check if the calculated size exceeds the limit
+        if (calculatedSize > MAX_BIT_ARRAY_SIZE)
+        {
+            string msize = $"{MAX_BIT_ARRAY_SIZE / (8.0 * 1024 * 1024):F2}";
+            Console.WriteLine($"Warning: Bloom filter size exceeds maximum limit of {msize} MB.");
+            return;
+        }
+        // Use the calculated size if within limit
+        _size = calculatedSize;
+
+        // Compute the optimal number of hash functions (k)
         _hashCount = CalculateHashCount(_size, expectedElements);
 
-        // Convert bit size to **byte size** by rounding up (`+7` ensures proper byte padding).
+        // Convert bit size to byte size with proper alignment
         _byteSize = (_size + 7) / 8;
 
-        // Initialize the bit array as a byte array instead of `BitArray` (for direct bit-level access).
+        // Initialize the bit array as a byte array
         _bitArray = new byte[_byteSize];
 
         // Store the initial expected size
         _expectedElements = expectedElements;
 
-        // StoreInitial fpRate
+        // Store initial FP rate
         _fpRate = falsePositiveRate;
 
-        // Store configuration details for debugging/logging purposes.
+        // Store configuration details for debugging/logging
         _bloomFilterConfiguration = $@"
         ================================================
               SBF - Standard BloomFilter w/ Murmur3
@@ -125,7 +134,6 @@ public class StandardBloomFilter<T>
             FP Rate         (p): {falsePositiveRate} or {falsePositiveRate  * 100:F1}%
         ================================================";
     }
-
     /// <summary>
     /// Inserts an item into the Bloom Filter by setting the **corresponding bits**
     /// in the bit array based on multiple **hash values**.
