@@ -335,7 +335,7 @@ public class StandardBloomFilter<T>
     {
         const int BYTES_PER_ROW = 8; // 8 bytes per row
         const string SPACE = " ";
-        string header = $"\n\n============[ Bloom Filter Grid View | ({_bitArray.Length} Bytes Array) | Elements ({_insertedElements} / {_expectedElements}) ]============\n\n";
+        string header = $"\n\n============[ Bloom Filter Grid View | ({_bitArray.Length:N0} Bytes Array) | Elements ({_insertedElements:N0} / {_expectedElements:N0}) ]============\n\n";
         string footer = $"\n\n{new string('=', header.Length)}";
 
         Console.WriteLine(header);
