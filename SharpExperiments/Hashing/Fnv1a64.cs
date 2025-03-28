@@ -7,7 +7,7 @@ public static class FNV1a64
     private const ulong FNV64OffsetBasis = 14695981039346656037;
     private const ulong FNV64Prime = 1099511628211;
 
-    public static ulong CreateHash(string data)
+    public static ulong CreateHash(ReadOnlySpan<byte> data)
     {
         if (string.IsNullOrEmpty(data))
         {
