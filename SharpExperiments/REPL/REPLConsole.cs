@@ -345,7 +345,7 @@ public static class REPLConsole
             return;
         }
 
-        int expectedElements = s_bloomFilter.GetAllocatedFilterSize();
+        long expectedElements = s_bloomFilter.GetAllocatedFilterSize();
         double expectedFpRate = s_bloomFilter.GetFalsePositiveRate();
         double observedFpRate = 0.0;
 

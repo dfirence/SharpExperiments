@@ -56,7 +56,7 @@ public class StandardBloomFilter<T>
     /// **Stores the Bloom Filter configuration details** as a formatted string.
     /// This is used for **debugging, logging, and performance monitoring**.
     /// </summary>
-    private readonly string _bloomFilterConfiguration;
+    private readonly string? _bloomFilterConfiguration;
 
     /// <summary>
     /// **Stores the acceptable Bloom Filter false positive rate** as a double.
