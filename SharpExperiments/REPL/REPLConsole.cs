@@ -340,11 +340,11 @@ public static class REPLConsole
         Console.WriteLine("\n");
     }
 
-    private static void InsertBloomElements(long elements)
+    private static void InsertBloomElements(string elements)
     {
         if (long.TryParse(elements, out long items))
         {
-            Console.WriteLine($"Conversion successful: {result} items to insert");
+            Console.WriteLine($"Conversion successful: {items} items to insert");
         }
         else
         {
