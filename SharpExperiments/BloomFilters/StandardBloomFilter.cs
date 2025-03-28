@@ -32,7 +32,7 @@ public class StandardBloomFilter<T>
     /// Instead of using a `BitArray`, we use a **byte array** for direct bitwise manipulation,
     /// reducing memory overhead.
     /// </summary>
-    private readonly byte[] _bitArray;
+    private readonly byte[]? _bitArray;
 
     /// <summary>
     /// **Size of `_bitArray` in bytes**.
@@ -188,7 +188,7 @@ public class StandardBloomFilter<T>
     /// Gets the chosen number of element during initialization.
     /// </summary>
     /// <returns></returns>
-    public int GetAllocatedFilterSize()
+    public long GetAllocatedFilterSize()
     {
         return _expectedElements;
     }
@@ -197,7 +197,7 @@ public class StandardBloomFilter<T>
     /// Gets the current number of elements inserted.
     /// </summary>
     /// <returns></returns>
-    public int GetCurrentFilterSize()
+    public long GetCurrentFilterSize()
     {
         return _insertedElements;
     }
@@ -221,7 +221,7 @@ public class StandardBloomFilter<T>
     }
 
     // Returns the size of the bit array in bits
-    public int GetBitArraySize()
+    public long GetBitArraySize()
     {
         return _size;
     }
