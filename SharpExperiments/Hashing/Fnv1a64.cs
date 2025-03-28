@@ -1,4 +1,4 @@
-namespace SharpEdperiments.Hashing;
+namespace SharpExperiments.Hashing;
 using System.Text;
 
 public class FNV1a64
