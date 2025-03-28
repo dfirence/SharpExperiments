@@ -342,10 +342,20 @@ public static class REPLConsole
 
     private static void InsertBloomElements(long elements)
     {
-        for (long i= 0; i < elements; i++)
+        if (long.TryParse(elements, out long items))
+        {
+            Console.WriteLine($"Conversion successful: {result} items to insert");
+        }
+        else
+        {
+            Console.WriteLine("Invalid input. Conversion failed.");
+            return;
+        }
+        
+        for (long i= 0; i < items; i++)
         {
             string testValue = $"test_{Guid.NewGuid()}";
-            testFilter.Add(testValue);
+            s_bloomFilter.Add(testValue);
         }
     }
     
