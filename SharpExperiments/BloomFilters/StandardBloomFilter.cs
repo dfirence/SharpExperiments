@@ -128,8 +128,8 @@ public class StandardBloomFilter<T>
 
         Config
         
-            Bit Array Size  (m): {_size} bits ({_byteSize} bytes)
-            Elements        (n): {_expectedElements}
+            Bit Array Size  (m): {_size:N0} bits ({_byteSize:N0} bytes)
+            Elements        (n): {_expectedElements:N0}
             Hash Functions  (k): {_hashCount}
             FP Rate         (p): {falsePositiveRate} or {falsePositiveRate  * 100:F1}%
         ================================================";
