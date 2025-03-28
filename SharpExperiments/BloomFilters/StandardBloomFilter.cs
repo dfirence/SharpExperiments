@@ -278,23 +278,42 @@ public class StandardBloomFilter<T>
     public bool MightContain(T item)
     {
         Span<long> lookupHashes = stackalloc long[_hashCount];
-
         Murmur3.CreateHashes(item, lookupHashes);
 
         foreach (var hash in lookupHashes)
         {
-            int bitIndex = (int)(hash % _size);
-            int byteIndex = bitIndex >> 3;
-            int bitMask = 1 << (bitIndex & 7);
+            // Use long for safe bit index calculation
+            long bitIndex = hash % _size;
 
+            // Validate bitIndex to prevent overflow
+            if (bitIndex < 0 || bitIndex >= _size)
+            {
+                throw new IndexOutOfRangeException($"Invalid bit index: {bitIndex}. Possible hash error or overflow.");
+            }
+
+            // Calculate byte index using long
+            long byteIndex = bitIndex >> 3;  // bitIndex / 8
+
+            // Check byteIndex bounds before accessing _bitArray
+            if (byteIndex >= _bitArray.Length || byteIndex < 0)
+            {
+                throw new IndexOutOfRangeException($"Byte index {byteIndex} is out of bounds for array size {_bitArray.Length}.");
+            }
+
+            // Bit mask stays as int (0-7 range is safe for int)
+            int bitMask = 1 << (int)(bitIndex & 7);
+
+            // Check if the bit is set
             bool isSet = (_bitArray[byteIndex] & bitMask) != 0;
 
+            // Return false immediately if any bit is not set
             if (!isSet)
             {
                 return false; // If any bit is missing, the item is not in the filter.
             }
         }
 
+        // All bits are set, the item *might* be present
         return true;
     }
 
