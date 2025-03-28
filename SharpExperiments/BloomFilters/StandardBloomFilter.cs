@@ -165,17 +165,17 @@ public class StandardBloomFilter<T>
 
         foreach (var hash in insertHashes)
         {
-            long safeBitIndex = hash % _size;
+            // Use long to prevent overflow in bitIndex calculation
+            long bitIndex = hash % _size;
 
-            // Validate bitIndex within safe bounds
-            if (safeBitIndex < 0 || safeBitIndex >= _size)
+            // Validate bitIndex within bounds
+            if (bitIndex < 0 || bitIndex >= _size)
             {
-                throw new IndexOutOfRangeException($"Invalid bit index: {safeBitIndex}. Possible hash error or overflow.");
+                throw new IndexOutOfRangeException($"Invalid bit index: {bitIndex}. Possible hash error or overflow.");
             }
 
-            int bitIndex = (int)safeBitIndex;
-            int byteIndex = bitIndex >> 3;  // bitIndex / 8
-            int bitMask = 1 << (bitIndex & 7);
+            // Use long to calculate byteIndex safely
+            long byteIndex = bitIndex >> 3;  // Same as bitIndex / 8
 
             // Validate byteIndex before accessing the array
             if (byteIndex >= _bitArray.Length || byteIndex < 0)
@@ -183,9 +183,13 @@ public class StandardBloomFilter<T>
                 throw new IndexOutOfRangeException($"Byte index {byteIndex} is out of bounds for array size {_bitArray.Length}.");
             }
 
-            // Check if this bit was not already set
+            // Calculate bit mask for the bit position within the byte
+            int bitMask = 1 << (int)(bitIndex & 7);  // Only this part stays as int (0-7 is safe)
+
+            // Check if the bit is already set
             if ((_bitArray[byteIndex] & bitMask) == 0)
             {
+                // Set the bit
                 _bitArray[byteIndex] |= (byte)bitMask;
                 isNewElement = true;
             }
