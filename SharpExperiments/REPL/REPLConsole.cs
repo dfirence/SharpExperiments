@@ -354,11 +354,16 @@ public static class REPLConsole
         // Reduce number of lookups for large filters
         int totalLookups = expectedElements > 5000 ? 250_000 : 1_000_000;
 
-        // Adjust FP check frequency dynamically
-        long checkInterval = Math.Max(10, expectedElements / 50);
+        // Dynamically calculate safe insertion limit (n_safe)
+        long m_bits = testFilter.GetBitArraySize();  // Total bits in filter
+        int k_hashCount = testFilter.GetCurrentHashCount();
+        long n_safe = (long)(m_bits / k_hashCount * Math.Log(2));  // Safe limit
 
-        // Limit insertions (prevents excessive runtime)
-        long maxInsertions = (int)(expectedElements * 1.5);
+        // Adjust FP check frequency dynamically
+        long checkInterval = Math.Max(10, n_safe / 50);
+
+        // Set maxInsertions to dynamically calculated limit
+        long maxInsertions = n_safe;
         long effectiveLimit = 0;
         long falsePositives = 0;
 
@@ -369,10 +374,11 @@ public static class REPLConsole
 
             📌 Simulated Filter Capacity    {expectedElements:N0}
             🔹 Expected FP Rate             {expectedFpRate * 100:F1}%
+            🔥 Safe Insertion Limit         {n_safe:N0} items before FP degradation
 
             ========================================================================");
 
-        // Move stackalloc OUTSIDE loop
+        // Move stackalloc OUTSIDE loop for performance
         Span<long> lookupHashes = stackalloc long[testFilter.GetCurrentHashCount()];
 
         // Precompute hash values for lookups
@@ -415,18 +421,20 @@ public static class REPLConsole
 
                 observedFpRate = (double)falsePositives / totalLookups;
 
+                // Stop insertions if observed FP rate exceeds expected rate
                 if (observedFpRate > expectedFpRate)
                 {
                     effectiveLimit = inserted;
+                    Console.WriteLine($"\n⚠️ Observed FP rate ({observedFpRate * 100:F2}%) exceeded expected ({expectedFpRate * 100:F1}%). Stopping at {inserted:N0} items.");
                     break;
                 }
             }
 
-            // Stop at max insertions
+            // Stop at max safe insertions
             if (inserted >= maxInsertions - 1)
             {
                 effectiveLimit = inserted;
-                Console.WriteLine("\n⚠️ Max insertions reached. Stopping test.");
+                Console.WriteLine("\n✅ Max safe insertions reached. Stopping test.");
                 break;
             }
         }
