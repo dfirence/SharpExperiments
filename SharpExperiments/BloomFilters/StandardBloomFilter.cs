@@ -13,13 +13,13 @@ public class StandardBloomFilter<T>
     /// **Maximum Bloom Filter size** (1GB).
     /// Limits the **maximum number of bits** allocated to prevent excessive memory usage.
     /// </summary>
-    private const int MAX_BIT_ARRAY_SIZE = 8_589_934_592; // 1 GB in bits
+    private const long MAX_BIT_ARRAY_SIZE = 8_589_934_592; // 1 GB in bits
 
     /// <summary>
     /// **Total number of bits (m)** in the Bloom Filter.
     /// Computed based on the expected number of elements and target false positive rate.
     /// </summary>
-    private readonly int _size;
+    private readonly long _size;
 
     /// <summary>
     /// **Optimal number of hash functions (k)**.
@@ -38,7 +38,7 @@ public class StandardBloomFilter<T>
     /// **Size of `_bitArray` in bytes**.
     /// Calculated as `(bitSize + 7) / 8` to ensure proper byte alignment.
     /// </summary>
-    private readonly int _byteSize;
+    private readonly long _byteSize;
 
     /// <summary>
     /// **Expected Number of elements inserted** into the Bloom Filter.
@@ -91,10 +91,10 @@ public class StandardBloomFilter<T>
     /// The **target false positive rate** (default: **1%**).
     /// Lower values require a **larger bit array size** to maintain accuracy.
     /// </param>
-    public StandardBloomFilter(int expectedElements, double falsePositiveRate = 0.01)
+    public StandardBloomFilter(long expectedElements, double falsePositiveRate = 0.01)
     {
         // Compute the optimal bit size (m) based on expected elements and target FP rate.
-        int calculatedSize = CalculateBitSize(expectedElements, falsePositiveRate) + 16;
+        long calculatedSize = CalculateBitSize(expectedElements, falsePositiveRate) + 16;
 
         // Check if the calculated size exceeds the limit
         if (calculatedSize > MAX_BIT_ARRAY_SIZE)
@@ -350,7 +350,7 @@ public class StandardBloomFilter<T>
     /// <param name="n">The expected number of elements to store in the Bloom Filter.</param>
     /// <param name="p">The desired false positive rate (between 0 and 1).</param>
     /// <returns>The computed optimal bit array size (m), rounded up.</returns>
-    private int CalculateBitSize(int n, double p)
+    private long CalculateBitSize(long n, double p)
     {
         // Prevent invalid inputs (e.g., p should be between 0 and 1)
         if (n <= 0 || p <= 0 || p >= 1)
@@ -360,7 +360,7 @@ public class StandardBloomFilter<T>
 
         // **Optimal Bloom Filter Size Calculation**
         // Formula: m = (-n * ln(p)) / (ln(2)^2)
-        return (int)Math.Ceiling(-n * Math.Log(p) / Math.Pow(Math.Log(2), 2));
+        return (long)Math.Ceiling(-n * Math.Log(p) / Math.Pow(Math.Log(2), 2));
     }
 
     /// <summary>
@@ -387,7 +387,7 @@ public class StandardBloomFilter<T>
     /// <param name="m">The number of bits in the Bloom Filter.</param>
     /// <param name="n">The expected number of elements to store.</param>
     /// <returns>The optimal number of hash functions (k), rounded up.</returns>
-    private int CalculateHashCount(int m, int n)
+    private int CalculateHashCount(long m, int n)
     {
         // Prevent division by zero or invalid values
         if (m <= 0 || n <= 0)
