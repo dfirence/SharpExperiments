@@ -55,4 +55,10 @@ public class Hashing_Murmur3_RealWorldURLs
     {
         _ = Murmur3.CreateHash(_utf8Bytes);
     }
+    
+    [Benvhmark]
+    public void FNV1a64_UTF8_CreateHash()
+    {
+        _ = FNV1a64.CreateHash(_utf8Bytes);
+    }
 }

@@ -31,4 +31,10 @@ public class Hashing_Murmur3_256KB_Benchmark
     {
         _ = Murmur3.CreateHash(_data256KB);
     }
+    
+    [Benchmark]
+    public void Afnv1_256KB_Hash()
+    {
+        _ = FNV1a64(_data256KB);
+    }
 }
