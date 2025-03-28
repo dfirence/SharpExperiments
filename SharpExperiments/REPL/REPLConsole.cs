@@ -137,6 +137,9 @@ public static class REPLConsole
             case "fptest":
                 RunFalsePositiveTest();
                 break;
+            case "insert":
+                InsertBloomElements(args);
+                break; 
             case "maybe":
                 CheckMembership(args);
                 break;
@@ -337,6 +340,15 @@ public static class REPLConsole
         Console.WriteLine("\n");
     }
 
+    private static void InsertBloomElements(long elements)
+    {
+        for (long i= 0; i < elements; i++)
+        {
+            string testValue = $"test_{Guid.NewGuid()}";
+            testFilter.Add(testValue);
+        }
+    }
+    
     private static void RunFalsePositiveTest()
     {
         if (s_bloomFilter == null)
