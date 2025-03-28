@@ -158,21 +158,34 @@ public class StandardBloomFilter<T>
     public void Add(T item)
     {
         Span<long> insertHashes = stackalloc long[_hashCount];
-        // Track if at least one new bit is set
         bool isNewElement = false;
-        
+
+        // Generate hashes safely
         Murmur3.CreateHashes(item, insertHashes);
 
         foreach (var hash in insertHashes)
         {
-            int bitIndex = (int)(hash % _size);
-            int byteIndex = bitIndex >> 3;
+            long safeBitIndex = hash % _size;
+
+            // Validate bitIndex within safe bounds
+            if (safeBitIndex < 0 || safeBitIndex >= _size)
+            {
+                throw new IndexOutOfRangeException($"Invalid bit index: {safeBitIndex}. Possible hash error or overflow.");
+            }
+
+            int bitIndex = (int)safeBitIndex;
+            int byteIndex = bitIndex >> 3;  // bitIndex / 8
             int bitMask = 1 << (bitIndex & 7);
+
+            // Validate byteIndex before accessing the array
+            if (byteIndex >= _bitArray.Length || byteIndex < 0)
+            {
+                throw new IndexOutOfRangeException($"Byte index {byteIndex} is out of bounds for array size {_bitArray.Length}.");
+            }
 
             // Check if this bit was not already set
             if ((_bitArray[byteIndex] & bitMask) == 0)
             {
-                // Set the bit
                 _bitArray[byteIndex] |= (byte)bitMask;
                 isNewElement = true;
             }
