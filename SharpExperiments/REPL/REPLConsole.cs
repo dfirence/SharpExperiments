@@ -355,12 +355,12 @@ public static class REPLConsole
         int totalLookups = expectedElements > 5000 ? 250_000 : 1_000_000;
 
         // Adjust FP check frequency dynamically
-        int checkInterval = Math.Max(10, expectedElements / 50);
+        long checkInterval = Math.Max(10, expectedElements / 50);
 
         // Limit insertions (prevents excessive runtime)
-        int maxInsertions = (int)(expectedElements * 1.5);
-        int effectiveLimit = 0;
-        int falsePositives = 0;
+        long maxInsertions = (int)(expectedElements * 1.5);
+        long effectiveLimit = 0;
+        long falsePositives = 0;
 
         Console.WriteLine($@"
 
