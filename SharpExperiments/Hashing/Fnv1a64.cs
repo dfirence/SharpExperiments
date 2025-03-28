@@ -1,5 +1,6 @@
 namespace SharpExperiments.Hashing;
 using System.Text;
+using System;
 
 public static class FNV1a64
 {
@@ -7,20 +8,19 @@ public static class FNV1a64
     private const ulong FNV64OffsetBasis = 14695981039346656037;
     private const ulong FNV64Prime = 1099511628211;
 
+    /// <summary>
+    /// Creates a 64-bit FNV-1a hash from a ReadOnlySpan<byte>.
+    /// </summary>
+    /// <param name="data">The input byte data.</param>
+    /// <returns>The 64-bit hash value.</returns>
     public static ulong CreateHash(ReadOnlySpan<byte> data)
     {
-        if (string.IsNullOrEmpty(data))
-        {
-            throw new ArgumentException("Data cannot be null or empty");
-        } 
-
-        byte[] bytes = Encoding.UTF8.GetBytes(data);
         ulong hash = FNV64OffsetBasis;
 
-        foreach (byte b in bytes)
+        foreach (byte b in data)
         {
-            hash ^= b;
-            hash *= FNV64Prime;
+            hash ^= b;                  // XOR byte with hash
+            hash *= FNV64Prime;         // Multiply by prime
         }
 
         return hash;
